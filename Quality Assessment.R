@@ -12,8 +12,8 @@ cel.folder.name <- "Microarray_CEL files"
 
 library(oligo)
 
-dir.create(paste("~/Desktop", "Microarray Analysis", sep="/"))
-main.directory <- paste("~/Desktop", "Microarray Analysis", sep="/")
+dir.create(paste("~/Desktop", "PUFA Microarray Analysis", sep="/"))
+main.directory <- paste("~/Desktop", "PUFA Microarray Analysis", sep="/")
 dir.create(paste(main.directory, "All 32 Arrays", sep="/"))
 subdir.all <- paste(main.directory, "All 32 Arrays/", sep="/")
 
@@ -45,15 +45,17 @@ subdir.allQA <- paste(subdir.all, "QA Images of Raw Data/", sep="/")
 
 ### Boxplot ###
 
+pdf(file=paste(subdir.allQA, "Raw Boxplot.pdf", sep=""), width=20, height=7)
 boxplot(raw, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity")
-quartz.save(paste(subdir.allQA, "Raw Boxplot.pdf", sep=""), type="pdf", width=15, height=7)
+dev.off()
 
 
 ### Density Plot ###
 
+pdf(file=paste(subdir.allQA, "Raw Density Estimation Plot.pdf", sep=""), width=10, height=7)
 hist(raw, col=plot.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
 legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
-quartz.save(paste(subdir.allQA, "Raw Density Estimation Plot.pdf", sep=""), type="pdf", width=10, height=7)
+dev.off()
 
 
 ### Principal Component Analysis Plot ###
@@ -70,13 +72,15 @@ pca.values.raw <- prcomp(transposed.raw.expression.matrix)
 
 normal<-par(mar=c(5.1, 4.1, 4.1, 2.1), xpd=F)
 
+pdf(file=paste(subdir.allQA, "Raw PCA Plot.pdf", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
 #adds space on the side of the graph for the legend
 
 plot(pca.values.raw$x, col=pca.colors, pch=20, main="Raw PCA Plot")
 text(pca.values.raw$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
 legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend.colors, pch=20)
-quartz.save(paste(subdir.allQA, "Raw PCA Plot.pdf", sep=""), type="pdf")
+dev.off()
+
 par(normal)
 #returns the graph parameters to normal
 
@@ -84,10 +88,11 @@ pca.summary.raw <- summary(pca.values.raw)
 proportion.variance.raw <- pca.summary.raw$importance[2:3,1:5]
 #gets the values corresponding to the proportion of variance and cumulative variance for the first five principal components
 
-barplot(proportion.variance.raw, beside=T, col=c("black","gray"), main="Raw Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Percentage")
+pdf(file=paste(subdir.allQA, "Raw Proportion of Variance PCA.pdf", sep=""), width=7, height=7)
+barplot(proportion.variance.raw, beside=T, col=c("black","gray"), main="Raw Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Proportion")
 legend("topleft", inset=0.01, cex=0.75, c("Proportion of Variance", "Cumulative Proportion"), pch=15, col=c("black","gray"))
 box()
-quartz.save(paste(subdir.allQA, "Raw Proportion of Variance PCA.pdf", sep=""), type="pdf", width=7, height=7)
+dev.off()
 
 
 ### Hierarchical Clustering Dendogram ###
@@ -96,8 +101,9 @@ transposed <- t(raw.expression.matrix)
 distance <- dist(transposed)
 sample.clusters <- hclust(distance)
 
+pdf(file=paste(subdir.allQA, "Raw Hierarchical Cluster Dendogram.pdf", sep=""))
 plot(sample.clusters, main="Raw Hierarchical Cluster Dendogram", xlab="Samples", sub="")
-quartz.save(paste(subdir.allQA, "Raw Hierarchical Cluster Dendogram.pdf", sep=""), type="pdf")
+dev.off()
 
 
 ### Image Plots ###
@@ -107,8 +113,9 @@ subdir.allQA.im <- paste(subdir.allQA, "Image Plots/", sep="/")
 
 for (i in 1:32){
 	filename <- paste("Array", i, sep=" ")
+	png(file=paste(subdir.allQA.im, paste(filename, "Image Plot.png", sep=" "), sep=""))
 	image(raw[,i], xlab="Probe Intensity")
-	quartz.save(paste(subdir.allQA.im, paste(filename, "Image Plot.png", sep=" "), sep=""), type="png")
+	dev.off()
 }
 
 

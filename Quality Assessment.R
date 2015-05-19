@@ -37,30 +37,42 @@ sampleNames(raw) <- c(condition.names)
 
 ##### Quality Assessment #####
 
-plot.colors <- rainbow(32)
+plot.colors <- c(rep(c("red", "green", "cyan", "purple"), 8))
+group.colors <- c(rep("red", 8), rep("green", 8), rep("cyan", 8), rep("purple", 8))
+range.colors <- rainbow(32)
+
+group <- c(seq(from=1, to=32, by=4), seq(from=2, to=32, by=4), seq(from=3, to=32, by=4), seq(from=4, to=32, by=4))
 
 dir.create(paste(subdir.all, "QA Images of Raw Data", sep="/"))
 subdir.allQA <- paste(subdir.all, "QA Images of Raw Data/", sep="/")
 
 
-### Boxplot ###
+### Boxplots ###
 
 pdf(file=paste(subdir.allQA, "Raw Boxplot.pdf", sep=""), width=20, height=7)
 boxplot(raw, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity")
+dev.off()
+
+pdf(file=paste(subdir.allQA, "Raw Boxplot Grouped.pdf", sep=""), width=20, height=7)
+boxplot(raw[,group], range=1.5, col=group.colors, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity")
 dev.off()
 
 
 ### Density Plot ###
 
 pdf(file=paste(subdir.allQA, "Raw Density Estimation Plot.pdf", sep=""), width=10, height=7)
-hist(raw, col=plot.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
+hist(raw, col=range.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
 legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
+dev.off()
+
+pdf(file=paste(subdir.allQA, "Raw Density Estimation Plot Grouped.pdf", sep=""), width=10, height=7)
+hist(raw[,group], col=group.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
+legend("topright", inset=0.01, cex=0.75, c(condition.names[group]), col=group.colors, lty=1)
 dev.off()
 
 
 ### Principal Component Analysis Plot ###
 
-pca.colors <- c(rep(c("red", "green", "cyan", "purple"), 8))
 pca.legend.colors <- c("red", "green", "cyan", "purple")
 pca.conditions <- c("LC", "OC", "ALA", "LA")
 pca.numbers <- c(rep(1, 4), rep(2, 4), rep(3, 4), rep(4, 4), rep(5, 4), rep(6, 4), rep(7, 4), rep(8, 4))
@@ -76,7 +88,7 @@ pdf(file=paste(subdir.allQA, "Raw PCA Plot.pdf", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
 #adds space on the side of the graph for the legend
 
-plot(pca.values.raw$x, col=pca.colors, pch=20, main="Raw PCA Plot")
+plot(pca.values.raw$x, col=plot.colors, pch=20, main="Raw PCA Plot")
 text(pca.values.raw$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
 legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend.colors, pch=20)
 dev.off()
@@ -141,14 +153,14 @@ subdir.allQA.plm <- paste(subdir.allQA, "PLM Plots/", sep="/")
 # NUSE Plots #
 
 pdf(file=paste(subdir.allQA.plm, "NUSE plot.pdf", sep=""), width=20, height=7)
-NUSE(raw.plm, xlab="Array", main="Normalized Unscaled Standard Errors")
+NUSE(raw.plm, xlab="Array", main="Normalized Unscaled Standard Errors", col=plot.colors)
 dev.off()
 
 
 # RLE Plots #
 
 pdf(file=paste(subdir.allQA.plm, "RLE plot.pdf", sep=""), width=20, height=7)
-RLE(raw.plm, xlab="Array", main="Relative Log Expression")
+RLE(raw.plm, xlab="Array", main="Relative Log Expression", col=plot.colors)
 dev.off()
 
 
@@ -204,11 +216,20 @@ pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), width
 boxplot(normalized, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity")
 dev.off()
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), width=20, height=7)
+boxplot(normalized[,group], range=1.5, col=group.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity")
+dev.off()
+
 
 ### Density Plot ###
 
 pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), width=10, height=7)
-hist(normalized, col=plot.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
+hist(normalized, col=range.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
+legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
+dev.off()
+
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), width=10, height=7)
+hist(normalized[,group], col=group.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
 legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
 dev.off()
 
@@ -222,7 +243,7 @@ pca.values.preprocessed <- prcomp(transposed.preprocessed.expression.matrix)
 
 pdf(file=paste(subdir.all.preproc.im, "Preprocessed PCA Plot.pdf", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
-plot(pca.values.preprocessed$x, col=pca.colors, pch=20, main="Preprocessed PCA Plot")
+plot(pca.values.preprocessed$x, col=plot.colors, pch=20, main="Preprocessed PCA Plot")
 text(pca.values.preprocessed$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
 legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend.colors, pch=20)
 par(normal)

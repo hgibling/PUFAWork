@@ -112,8 +112,7 @@ dir.create(paste(subdir.allQA, "Image Plots", sep="/"))
 subdir.allQA.im <- paste(subdir.allQA, "Image Plots/", sep="/")
 
 for (i in 1:32){
-	filename <- paste("Array", i, sep=" ")
-	png(file=paste(subdir.allQA.im, paste(filename, "Image Plot.png", sep=" "), sep=""))
+	png(file=paste(subdir.allQA.im, paste(condition.names[i], "Image Plot.png", sep=" "), sep=""))
 	image(raw[,i], xlab="Probe Intensity")
 	dev.off()
 }
@@ -125,9 +124,9 @@ dir.create(paste(subdir.allQA, "Log Image Plots", sep="/"))
 subdir.allQA.ltim <- paste(subdir.allQA, "Log Image Plots/", sep="/")
 
 for (i in 1:32){
-	filename <- paste("Array", i, sep=" ")
+	png(file=paste(subdir.allQA.ltim, paste(condition.names[i], "Log Image Plot.png", sep=" "), sep=""))
 	image(raw[,i], xlab="Log Probe Intensity", transfo=function(x)x)
-	quartz.save(paste(subdir.allQA.ltim, paste(filename, "Log Image Plot.png", sep=" "), sep=""), type="png")
+	dev.off()
 }
 
 
@@ -141,14 +140,16 @@ subdir.allQA.plm <- paste(subdir.allQA, "PLM Plots/", sep="/")
 
 # NUSE Plots #
 
+pdf(file=paste(subdir.allQA.plm, "NUSE plot.pdf", sep=""), width=20, height=7)
 NUSE(raw.plm, xlab="Array", main="Normalized Unscaled Standard Errors")
-quartz.save(paste(subdir.allQA.plm, "NUSE plot.pdf", sep=""), type="pdf", width=15, height=7)
+dev.off()
 
 
 # RLE Plots #
 
+pdf(file=paste(subdir.allQA.plm, "RLE plot.pdf", sep=""), width=20, height=7)
 RLE(raw.plm, xlab="Array", main="Relative Log Expression")
-quartz.save(paste(subdir.allQA.plm, "RLE plot.pdf", sep=""), type="pdf", width=15, height=7)
+dev.off()
 
 
 # Weights Image Plots #
@@ -157,9 +158,9 @@ dir.create(paste(subdir.allQA.plm, "Weights Image Plots", sep="/"))
 subdir.allQA.plmW <- paste(subdir.allQA.plm, "Weights Image Plots/", sep="/")
 
 for (i in 1:32){
-	filename <- paste("Array", i, sep=" ")
+	png(file=paste(subdir.allQA.plmW, paste(condition.names[i], "PLM Weights Image.png", sep=" "), sep=""))
 	image(raw.plm, type="weights", which=i, xlab="Weights PLM Plot")
-	quartz.save(paste(subdir.allQA.plmW, paste(filename, "PLM Weights Image.png", sep=" "), sep=""), type="png")
+	dev.off()
 }
 
 
@@ -169,9 +170,9 @@ dir.create(paste(subdir.allQA.plm, "Residuals Image Plots", sep="/"))
 subdir.allQA.plmR <- paste(subdir.allQA.plm, "Residuals Image Plots/", sep="/")
 
 for (i in 1:32){
-	filename <- paste("Array", i, sep=" ")
+	png(file=paste(subdir.allQA.plmR, paste(condition.names[i], "PLM Residuals Image.png", sep=" "), sep=""))
 	image(raw.plm, type="residuals", which=i, xlab="Residuals PLM Plot")
-	quartz.save(paste(subdir.allQA.plmR, paste(filename, "PLM Residuals Image.png", sep=" "), sep=""), type="png")
+	dev.off()
 }
 
 
@@ -181,9 +182,9 @@ dir.create(paste(subdir.allQA.plm, "Signs of Residuals Image Plots", sep="/"))
 subdir.allQA.plmS <- paste(subdir.allQA.plm, "Signs of Residuals Image Plots/", sep="/")
 
 for (i in 1:32){
-	filename <- paste("Array", i, sep=" ")
+	png(file=paste(subdir.allQA.plmS, paste(condition.names[i], "PLM Signs Image.png", sep=" "), sep=""))
 	image(raw.plm, type="sign.residuals", which=i, xlab="Signs of the Residuals PLM Plot")
-	quartz.save(paste(subdir.allQA.plmS, paste(filename, "PLM Signs Image.png", sep=" "), sep=""), type="png")
+	dev.off()
 }
 
 
@@ -194,20 +195,22 @@ normalized <- rma(raw)
 dir.create(paste(subdir.all, "Preprocessed Data", sep="/"))
 subdir.all.preproc <- paste(subdir.all, "Preprocessed Data/", sep="/")
 dir.create(paste(subdir.all.preproc, "Images", sep="/"))
-subdir.all.preproc.im <- paste(subdir.all, "Images/", sep="/")
+subdir.all.preproc.im <- paste(subdir.all.preproc, "Images/", sep="/")
 
 
 ### Boxplot ###
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), width=20, height=7)
 boxplot(normalized, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity")
-quartz.save(paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), type="pdf", width=15, height=7)
+dev.off()
 
 
 ### Density Plot ###
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), width=10, height=7)
 hist(normalized, col=plot.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
 legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
-quartz.save(paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), type="pdf", width=10, height=7)
+dev.off()
 
 
 ### Principal Component Analysis ###
@@ -217,20 +220,22 @@ transposed.preprocessed.expression.matrix <- t(preprocessed.expression.matrix)
 
 pca.values.preprocessed <- prcomp(transposed.preprocessed.expression.matrix)
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed PCA Plot.pdf", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
 plot(pca.values.preprocessed$x, col=pca.colors, pch=20, main="Preprocessed PCA Plot")
 text(pca.values.preprocessed$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
 legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend.colors, pch=20)
-quartz.save(paste(subdir.all.preproc.im, "Preprocessed PCA Plot.pdf", sep=""), type="pdf")
 par(normal)
+dev.off()
 
 pca.summary.preprocessed <- summary(pca.values.preprocessed)
 proportion.variance.preprocessed <- pca.summary.preprocessed$importance[2:3,1:5]
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Proportion of Variance PCA.pdf", sep=""))
 barplot(proportion.variance.preprocessed, beside=T, col=c("black","gray"), main="Preprocessed Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Percentage")
 legend("topleft", inset=0.01, cex=0.75, c("Proportion of Variance", "Cumulative Proportion"), pch=15, col=c("black","gray"))
 box()
-quartz.save(paste(subdir.all.preproc.im, "Preprocessed Proportion of Variance PCA.pdf", sep=""), type="pdf", width=7, height=7)
+dev.off()
 
 
 ### Hierarchical Clustering Dendogram ###
@@ -239,5 +244,6 @@ preprocessed.transposed <- t(preprocessed.expression.matrix)
 preprocessed.distance <- dist(preprocessed.transposed)
 preprocessed.sample.clusters <- hclust(preprocessed.distance)
 
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Hierarchical Cluster Dendogram.pdf", sep=""))
 plot(preprocessed.sample.clusters, main="Preprocessed Hierarchical Cluster Dendogram", xlab="Samples")
-quartz.save(paste(subdir.all.preproc.im, "Preprocessed Hierarchical Cluster Dendogram.pdf", sep=""), type="pdf")
+dev.off()

@@ -4,8 +4,8 @@
 # Have just the Cel files in one folder on your desktop
 
 cel.folder.name <- "Microarray_CEL files"
-#for example: cel.folder.name <- "Cel Files"
-#must type the name exactly as it appears (capitalization, spaces, etc)
+# for example: cel.folder.name <- "Cel Files"
+# must type the name exactly as it appears (capitalization, spaces, etc)
 
 ##################################################
 ##################################################
@@ -32,7 +32,7 @@ t.name.frame <- t(name.frame)
 condition.names <- as.vector(c(t.name.frame[,1], t.name.frame[,2], t.name.frame[,3], t.name.frame[,4], t.name.frame[,5], t.name.frame[,6], t.name.frame[,7], t.name.frame[,8]))
 
 sampleNames(raw) <- c(condition.names)
-#applies condition names and replicate numbers to each array
+# applies condition names and replicate numbers to each array
 
 
 ##### Quality Assessment #####
@@ -42,6 +42,7 @@ group.colors <- c(rep("red", 8), rep("green", 8), rep("cyan", 8), rep("purple", 
 range.colors <- rainbow(32)
 
 group <- c(seq(from=1, to=32, by=4), seq(from=2, to=32, by=4), seq(from=3, to=32, by=4), seq(from=4, to=32, by=4))
+# subsetting vector to group treatment groups together
 
 dir.create(paste(subdir.all, "QA Images of Raw Data", sep="/"))
 subdir.allQA <- paste(subdir.all, "QA Images of Raw Data/", sep="/")
@@ -86,7 +87,7 @@ normal<-par(mar=c(5.1, 4.1, 4.1, 2.1), xpd=F)
 
 pdf(file=paste(subdir.allQA, "Raw PCA Plot.pdf", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
-#adds space on the side of the graph for the legend
+# adds space on the side of the graph for the legend
 
 plot(pca.values.raw$x, col=plot.colors, pch=20, main="Raw PCA Plot")
 text(pca.values.raw$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
@@ -94,11 +95,11 @@ legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend
 dev.off()
 
 par(normal)
-#returns the graph parameters to normal
+# returns the graph parameters to normal
 
 pca.summary.raw <- summary(pca.values.raw)
 proportion.variance.raw <- pca.summary.raw$importance[2:3,1:5]
-#gets the values corresponding to the proportion of variance and cumulative variance for the first five principal components
+# gets the values corresponding to the proportion of variance and cumulative variance for the first five principal components
 
 pdf(file=paste(subdir.allQA, "Raw Proportion of Variance PCA.pdf", sep=""), width=7, height=7)
 barplot(proportion.variance.raw, beside=T, col=c("black","gray"), main="Raw Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Proportion")

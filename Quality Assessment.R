@@ -62,7 +62,7 @@ dev.off()
 
 pdf(file=paste(subdir.allQA, "Raw Density Estimation Plot.pdf", sep=""), width=10, height=7)
 hist(raw, col=range.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
-legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
+legend("topright", inset=0.01, cex=0.75, c(condition.names), col=range.colors, lty=1)
 dev.off()
 
 pdf(file=paste(subdir.allQA, "Raw Density Estimation Plot Grouped.pdf", sep=""), width=10, height=7)
@@ -216,7 +216,7 @@ pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), width
 boxplot(normalized, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity")
 dev.off()
 
-pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot.pdf", sep=""), width=20, height=7)
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Boxplot Grouped.pdf", sep=""), width=20, height=7)
 boxplot(normalized[,group], range=1.5, col=group.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity")
 dev.off()
 
@@ -225,12 +225,12 @@ dev.off()
 
 pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), width=10, height=7)
 hist(normalized, col=range.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
-legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
+legend("topright", inset=0.01, cex=0.75, c(condition.names), col=range.colors, lty=1)
 dev.off()
 
-pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot.pdf", sep=""), width=10, height=7)
+pdf(file=paste(subdir.all.preproc.im, "Preprocessed Density Estimation Plot Grouped.pdf", sep=""), width=10, height=7)
 hist(normalized[,group], col=group.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation")
-legend("topright", inset=0.01, cex=0.75, c(condition.names), col=plot.colors, lty=1)
+legend("topright", inset=0.01, cex=0.75, c(condition.names[group]), col=group.colors, lty=1)
 dev.off()
 
 

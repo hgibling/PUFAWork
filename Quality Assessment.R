@@ -254,7 +254,7 @@ pca.summary.preprocessed <- summary(pca.values.preprocessed)
 proportion.variance.preprocessed <- pca.summary.preprocessed$importance[2:3,1:5]
 
 pdf(file=paste(subdir.all.preproc.im, "Preprocessed Proportion of Variance PCA.pdf", sep=""))
-barplot(proportion.variance.preprocessed, beside=T, col=c("black","gray"), main="Preprocessed Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Percentage")
+barplot(proportion.variance.preprocessed, beside=T, col=c("black","gray"), main="Preprocessed Proportion of Variance of Principal Components", xlab="Principal Components", ylab="Proportion")
 legend("topleft", inset=0.01, cex=0.75, c("Proportion of Variance", "Cumulative Proportion"), pch=15, col=c("black","gray"))
 box()
 dev.off()

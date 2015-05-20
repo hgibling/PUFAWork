@@ -5,14 +5,14 @@
 
 # Have the annotation file (Annotations for Rat Gene 21st.csv) on your desktop
 
-arrays.to.be.dropped <- c(11)
+arrays.to.be.dropped <- c(18)
 # for example: arrays.to.be.dropped<-c(5,6)
 
 # Input remaining arrays for each condition and NA for dropped arrays
 
 LC.remaining <- c(1:8)
-OC.remaining <- c(1:8)
-ALA.remaining <- c(1:2, NA, 4:8)
+OC.remaining <- c(1:4, 6:8)
+ALA.remaining <- c(1:8)
 LA.remaining <- c(1:8)
 # for example: LC.remaining <- c(1, NA 3:8)
 # if array 5 has been dropped, the remaining LC samples are LC1, LC3 through LC8
@@ -26,13 +26,7 @@ subdir.drop <- paste(main.directory, "Data With Dropped Arrays/", sep="/")
 
 raw.dropped <- raw[,-c(arrays.to.be.dropped)]
 
-name.frame.dropped <- data.frame(LC=paste("LC", LC.remaining, sep=""), OC=paste("OC", OC.remaining, sep=""), ALA=paste("ALA", ALA.remaining, sep=""), LA=paste("LA", LA.remaining, sep=""))
-
-t.name.frame.dropped <- t(name.frame.dropped)
-
-condition.names.dropped.NA <- as.vector(c(t.name.frame.dropped[,1], t.name.frame.dropped[,2], t.name.frame.dropped[,3], t.name.frame.dropped[,4], t.name.frame.dropped[,5], t.name.frame.dropped[,6], t.name.frame.dropped[,7], t.name.frame.dropped[,8]))
-
-condition.names.dropped <- condition.names.dropped.NA[-arrays.to.be.dropped]
+condition.names.dropped <- condition.names[-arrays.to.be.dropped]
 
 sampleNames(raw.dropped) <- c(condition.names.dropped)
 # applies condition names and replicate numbers to each array

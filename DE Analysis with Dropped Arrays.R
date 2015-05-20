@@ -21,8 +21,8 @@ LA.remaining <- c(1:8)
 ##################################################
 
 
-dir.create(paste(main.directory, "Data With Dropped Arrays", sep="/"))
-subdir.drop <- paste(main.directory, "Data With Dropped Arrays/", sep="/")
+dir.create(paste(main.directory, "Data With Dropped Arrays (OC5)", sep="/"))
+subdir.drop <- paste(main.directory, "Data With Dropped Arrays (OC5)/", sep="/")
 
 raw.dropped <- raw[,-c(arrays.to.be.dropped)]
 
@@ -34,28 +34,50 @@ sampleNames(raw.dropped) <- c(condition.names.dropped)
 
 ##### Quality Assessment with Dropped Arrays #####
 
-plot.colors.dropped <- rainbow(as.integer(dim(raw.dropped)[2]))
+plot.colors.dropped <- plot.colors[-arrays.to.be.dropped]
+group.colors.dropped <- group.colors[-arrays.to.be.dropped]
+range.colors.dropped <- rainbow(as.integer(dim(raw.dropped)[2]))
+
+drop.position <- which(group %in% arrays.to.be.dropped)
+group.dropped.fix <- group[-drop.position]
+group.dropped <- group.dropped.fix
+
+for (i in 1:length(group.dropped.fix)){
+	if (group.dropped.fix[i] > arrays.to.be.dropped[1]){
+		group.dropped[i] <- (group.dropped.fix[i] - 1)
+	} else {
+		group.dropped[i] <- group.dropped.fix[i]
+	}
+}
+# only works when one array has been dropped... need to fix for multiple dropped arrays
 
 dir.create(paste(subdir.drop, "QA Images of Raw Data", sep="/"))
 subdir.dropQA <- paste(subdir.drop, "QA Images of Raw Data/", sep="/")
 
 
-### Boxplot ###
+### Boxplots ###
 
-boxplot(raw.dropped, range=1.5, col=plot.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity with Dropped Arrays")
+boxplot(raw.dropped, range=1.5, col=range.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity with Dropped Arrays")
 quartz.save(paste(subdir.dropQA, "Raw Boxplot with Dropped Arrays.pdf", sep=""), type="pdf", width=15, height=7)
+
+pdf(file=paste(subdir.dropQA, "Raw Boxplot with Dropped Arrays.pdf", sep=""), width=20, height=7)
+boxplot(raw.dropped, range=1.5, col=plot.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity with Dropped Arrays")
+dev.off()
+
+pdf(file=paste(subdir.dropQA, "Raw Boxplot with Dropped Arrays Grouped.pdf", sep=""), width=20, height=7)
+boxplot(raw.dropped[,group.dropped], range=1.5, col=group.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Raw Log Probe Intensity with Dropped Arrays")
+dev.off()
 
 
 ### Density Plot ###
 
-hist(raw.dropped, col=plot.colors.dropped, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation with Dropped Arrays")
+hist(raw.dropped, col=range.colors.dropped, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation with Dropped Arrays")
 legend("topright", inset=0.01, cex=0.75, c(condition.names.dropped), col=plot.colors.dropped, lty=1)
 quartz.save(paste(subdir.dropQA, "Raw Density Estimation Plot with Dropped Arrays.pdf", sep=""), type="pdf", width=10, height=7)
 
 
 ### Principal Component Analysis Plot ###
 
-pca.colors.dropped <- pca.colors[-arrays.to.be.dropped]
 pca.numbers.dropped <- pca.numbers[-arrays.to.be.dropped]
 
 raw.expression.matrix.dropped <- exprs(raw.dropped)
@@ -121,13 +143,13 @@ subdir.drop.preproc.im <- paste(subdir.drop.preproc, "Images/", sep="/")
 
 ### Boxplot ###
 
-boxplot(normalized.dropped, range=1.5, col=plot.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity with Dropped Arrays")
+boxplot(normalized.dropped, range=1.5, col=range.colors.dropped, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity with Dropped Arrays")
 quartz.save(paste(subdir.drop.preproc.im, "Preprossed Boxplot with Dropped Arrays.pdf", sep=""), type="pdf", width=15, height=7)
 
 
 ### Density Plot ###
 
-hist(normalized.dropped, col=plot.colors.dropped, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation with Dropped Arrays")
+hist(normalized.dropped, col=range.colors.dropped, lty=1, xlab="Log Intensity", ylab="Density", main="Preprocessed Density Estimation with Dropped Arrays")
 legend("topright", inset=0.01, cex=0.75, c(condition.names.dropped), col=plot.colors.dropped, lty=1)
 quartz.save(paste(subdir.drop.preproc.im, "Preprocessed Density Estimation Plot with Dropped Arrays.pdf", sep=""), type="pdf", width=10, height=7)
 

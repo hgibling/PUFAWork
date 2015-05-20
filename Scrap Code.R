@@ -6,7 +6,14 @@ boxplot(raw, range=1.5, col=pca.colors, xlab="Array", ylab="Log Probe Intensity"
 
 hist(raw, col=pca.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
 legend("topright", inset=0.01, cex=0.75, c(condition.names), col=pca.colors, lty=1)
+hist(raw, col=hist.colors, lty=1, xlab="Log Intensity", ylab="Density", main="Raw Density Estimation")
+legend("topright", inset=0.01, cex=0.75, c(condition.names), col=hist.colors, lty=1)
 
 black3 <- rep("black", 3)
 black2 <- rep("black", 2)
-hist.col <- c(black)
+hist.colors <- c(black2, "red", black3, "blue", black3, "green", black3, "orange", black3, "cyan", black3, "purple", black3, "brown", black3, "yellow", "black")
+
+
+dev.off()
+
+?RLE

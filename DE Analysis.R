@@ -47,6 +47,7 @@ remove.duplicates <- aggregate(duplicates, by=list(duplicates[,1]), FUN=mean)
 rownames(remove.duplicates)<-remove.duplicates[,2]
 
 no.duplicates <- remove.duplicates[,-c(1:2)]
+# removes repetitive columns with gene ids
 
 
 ### Create Reference List of All Annotated Genes for FunNet ###
@@ -62,10 +63,15 @@ dir.create(paste(subdir.all.preproc.filt, "Images", sep="/"))
 subsubdir.images <- paste(subdir.all.preproc.filt, "Images/", sep="/")
 
 
-### Boxplot ###
+### Boxplots ###
 
+pdf(file=paste(subsubdir.images, "Preprossed Boxplot with Annotated Genes.pdf", sep=""), width=20, height=7)
 boxplot(no.duplicates, range=1.5, col=plot.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity with Annotated Genes")
-quartz.save(paste(subsubdir.images, "Preprossed Boxplot with Annotated Genes.pdf", sep=""), type="pdf", width=15, height=7)
+dev.off()
+
+pdf(file=paste(subsubdir.images, "Preprossed Boxplot with Annotated Genes Grouped.pdf", sep=""), width=20, height=7)
+boxplot(no.duplicates[,group], range=1.5, col=group.colors, xlab="Array", ylab="Log Probe Intensity", main="Preprocessed Log Probe Intensity with Annotated Genes")
+dev.off()
 
 
 ### PCA Plot of Filtered Genes ###
@@ -73,20 +79,23 @@ quartz.save(paste(subsubdir.images, "Preprossed Boxplot with Annotated Genes.pdf
 transposed.annotated.gene.values <- t(no.duplicates)
 pca.annotated.genes <- prcomp(transposed.annotated.gene.values)
 
+pdf(file=paste(subsubdir.images, "Preprocessed PCA Plot with Annotated Genes", sep=""))
 par(mar=c(5.1, 4.1, 4.1, 6.1), xpd=T)
-plot(pca.annotated.genes$x, col=pca.colors, pch=20, main="Preprocessed PCA Plot with Annotated Genes")
+
+plot(pca.annotated.genes$x, col=plot.colors, pch=20, main="Preprocessed PCA Plot with Annotated Genes")
 text(pca.annotated.genes$x, pos=3, offset=0.2, labels=pca.numbers, cex=0.5)
 legend("topright", inset=c(-0.15,0), c(pca.conditions), cex=0.75, col=pca.legend.colors, pch=20)
-quartz.save(paste(subsubdir.images, "Preprocessed PCA Plot with Annotated Genes", sep=""), type="pdf")
 par(normal)
+dev.off()
 
 pca.summary <- summary(pca.annotated.genes)
 proportion.variance <- pca.summary$importance[2:3,1:5]
 
-barplot(proportion.variance,beside=T, col=c("black","gray"), main="Preprocessed Proportion of Variance of Principal Components \n with Annotated Genes", xlab="Principal Components", ylab="Percentage")
+pdf(file=paste(subsubdir.images, "Preprocessed Proportion of Variance PCA with Annotated Genes.pdf", sep=""))
+barplot(proportion.variance, beside=T, col=c("black","gray"), main="Preprocessed Proportion of Variance of Principal Components \n with Annotated Genes", xlab="Principal Components", ylab="Proportion")
 legend("topleft",inset=0.01, cex=0.75, c("Proportion of Variance", "Cumulative Proportion"), pch=15, col=c("black","gray"))
 box()
-quartz.save(paste(subsubdir.images, "Preprocessed Proportion of Variance PCA with Annotated Genes.pdf", sep=""), type="pdf", width=7, height=7)
+dev.off()
 
 
 ### Hierarchical Clustering Dendogram ###
@@ -95,23 +104,14 @@ annotated.transposed <- t(no.duplicates)
 annotated.distance <- dist(annotated.transposed)
 annotated.sample.clusters <- hclust(annotated.distance)
 
+pdf(file=paste(subsubdir.images, "Preprocessed Hierarchical Cluster Dendogram with Annotated Genes.pdf", sep=""))
 plot(annotated.sample.clusters, main="Preprocessed Hierarchical Cluster Dendogram \n with Annotated Genes", xlab="Samples")
-quartz.save(paste(subsubdir.images, "Preprocessed Hierarchical Cluster Dendogram with Annotated Genes.pdf", sep=""), type="pdf")
+dev.off()
 
 
 ##### Rearrange Samples so Replicates are Together #####
 
-LC.positions <- seq(1, 32, 4)
-OC.positions <- LC.positions+1
-ALA.positions <- LC.positions+2
-LA.positions <- LC.positions+3
-
-LC.arrays <- no.duplicates[LC.positions]
-OC.arrays <- no.duplicates[OC.positions]
-ALA.arrays <- no.duplicates[ALA.positions]
-LA.arrays <- no.duplicates[LA.positions]
-
-no.duplicates <- cbind(LC.arrays, OC.arrays, ALA.arrays, LA.arrays)
+no.duplicates <- no.duplicates[group]
 
 
 ##### Use ANOVA to Determine Differentially Expressed Genes #####
@@ -124,7 +124,7 @@ subsubdir.DE <- paste(subdir.all.preproc.filt, "Differentially Expressed Gene Li
 conditions <- gl(4, 8, 32, label=c("LC", "OC", "ALA", "LA"))
 
 anova.function <- function(x){
-	data <- data.frame(conditions,x)
+	data <- data.frame(conditions, x)
 	anova(aov(x~conditions, data))
 }
 
@@ -253,7 +253,7 @@ colnames(condition.value.columns) <- average.condition.names
 
 transposed.condition.values <- t(condition.value.columns)
 
-group.condition.values <- data.frame(Condition= average.condition.names,  transposed.condition.values)
+group.condition.values <- data.frame(Condition=average.condition.names,  transposed.condition.values)
 # warning is ok
 
 mean.condition.values <- aggregate(group.condition.values, by=list(group.condition.values[,1]), FUN=mean)

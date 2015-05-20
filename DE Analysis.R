@@ -19,30 +19,30 @@ subdir.all.preproc.filt <- paste(subdir.all.preproc, "Filtered Genes Data/", sep
 annotation.file <- read.csv("~/Desktop/Annotations for Rat Gene 21st.csv", header=TRUE)
 annotation.matrix <- as.matrix(annotation.file)
 annotations <- annotation.matrix[order(annotation.file[,1], annotation.file[,2]),]
-#creates a matrix where the genes are ordered by their transcript cluster
+# creates a matrix where the genes are ordered by their transcript cluster
 
 annotated.values <- cbind(annotations, preprocessed.expression.matrix)
-#combines gene annotations with expression values, which are already ordered according to transcript cluster
+# combines gene annotations with expression values, which are already ordered according to transcript cluster
 annotated.gene.values.all <- annotated.values[,-1]
-#removes transcript cluster column
+# removes transcript cluster column
 annotated.gene.values.no.NA <- na.omit(annotated.gene.values.all)
-#removes all genes with no annotation
+# removes all genes with no annotation
 
 rownames(annotated.gene.values.no.NA) <- annotated.gene.values.no.NA[,1]
 annotated.gene.values <- annotated.gene.values.no.NA[,-1]
-#removes column of gene IDs so all columns are expression values
+# removes column of gene IDs so all columns are expression values
 
 
 ##### Average Expression Values for Duplicated Genes #####
 
 genes <- as.numeric(rownames(annotated.gene.values))
-#warning is ok
+# warning is ok
 
 duplicates <- data.frame(Gene=genes, annotated.gene.values)
-#warning is ok
+# warning is ok
 
 remove.duplicates <- aggregate(duplicates, by=list(duplicates[,1]), FUN=mean)
-#for genes that are duplicated, for each column, the values are averaged
+# for genes that are duplicated, for each column, the values are averaged
 
 rownames(remove.duplicates)<-remove.duplicates[,2]
 
@@ -129,7 +129,7 @@ anova.function <- function(x){
 }
 
 anova.results <- apply(no.duplicates, 1, anova.function)
-#applies ANOVA function to each row (gene) of the filtered genes
+# applies ANOVA function to each row (gene) of the filtered genes
 
 pvalue.function <- function(x){
 	x["Pr(>F)"][1,]
@@ -149,7 +149,7 @@ colnames(adjusted.pvalues) <- "Adjusted P Value"
 p.05 <- which(adjusted.pvalues[,1]<0.05)
 
 diff.expressed.genes <- no.duplicates[p.05,]
-#gets a list of genes that have a p-value of less than 0.05 -- differentially expressed
+# gets a list of genes that have a p-value of less than 0.05 -- differentially expressed
 
 ANOVA.geneIDs <- rownames(diff.expressed.genes)
 
@@ -210,7 +210,7 @@ ALAvOC.info <- na.omit(pairwise.diff.genes[,3])
 LAvLC.info <- na.omit(pairwise.diff.genes[,4])
 LAvOC.info <- na.omit(pairwise.diff.genes[,5])
 ALAvLA.info <- na.omit(pairwise.diff.genes[,6])
-#gets the row numbers for the differentially expressed genes for each pairwise comparison
+# gets the row numbers for the differentially expressed genes for each pairwise comparison
 
 OCvLC.diff.values <- as.matrix(ttest.results[,1][OCvLC.info])
 ALAvLC.diff.values <- as.matrix(ttest.results[,2][ALAvLC.info])
@@ -218,7 +218,7 @@ ALAvOC.diff.values <- as.matrix(ttest.results[,3][ALAvOC.info])
 LAvLC.diff.values <- as.matrix(ttest.results[,4][LAvLC.info])
 LAvOC.diff.values <- as.matrix(ttest.results[,5][LAvOC.info])
 ALAvLA.diff.values <- as.matrix(ttest.results[,6][ALAvLA.info])
-#gets the expression values for the differentially expressed genes for each pairwise comparison
+# gets the expression values for the differentially expressed genes for each pairwise comparison
 
 OCvLC.genes <- as.numeric(rownames(OCvLC.diff.values))
 ALAvLC.genes <- as.numeric(rownames(ALAvLC.diff.values))
@@ -226,7 +226,7 @@ ALAvOC.genes <- as.numeric(rownames(ALAvOC.diff.values))
 LAvLC.genes <- as.numeric(rownames(LAvLC.diff.values))
 LAvOC.genes <- as.numeric(rownames(LAvOC.diff.values))
 ALAvLA.genes <- as.numeric(rownames(ALAvLA.diff.values))
-#gets a list of just the differentially expressed gene IDs for each pairwise comparison
+# gets a list of just the differentially expressed gene IDs for each pairwise comparison
 
 
 ### Save Gene Lists to Files ###
@@ -249,16 +249,16 @@ average.condition.names <- c(rep("LC", 8), rep("OC", 8), rep("ALA", 8), rep("LA"
 condition.value.columns <- diff.expressed.matrix
 
 colnames(condition.value.columns) <- average.condition.names
-#replaces the column names representing each individual array number with general names representing the conditions, so that the expression values for each condition can be averaged (next steps)
+# replaces the column names representing each individual array number with general names representing the conditions, so that the expression values for each condition can be averaged (next steps)
 
 transposed.condition.values <- t(condition.value.columns)
 
 group.condition.values <- data.frame(Condition= average.condition.names,  transposed.condition.values)
-#warning is ok
+# warning is ok
 
 mean.condition.values <- aggregate(group.condition.values, by=list(group.condition.values[,1]), FUN=mean)
-#warning is ok
-#averages out the values for each condition for each gene
+# warning is ok
+# averages out the values for each condition for each gene
 
 combined.condition.values <- t(mean.condition.values)
 cvalues <- data.frame(combined.condition.values[-c(1,2),])
@@ -267,7 +267,7 @@ LC.values <- as.numeric(levels(cvalues$X1))[cvalues$X1]
 OC.values <- as.numeric(levels(cvalues$X2))[cvalues$X2]
 ALA.values <- as.numeric(levels(cvalues$X3))[cvalues$X3]
 LA.values <- as.numeric(levels(cvalues$X4))[cvalues$X4]
-#the aggragate function results in the columns being identified as factors instead of numbers; this changes each number from a level of a factor to a numeric value
+# the aggragate function results in the columns being identified as factors instead of numbers; this changes each number from a level of a factor to a numeric value
 
 average.condition.values <- data.frame(LC=LC.values, OC=OC.values, ALA=ALA.values, LA=LA.values)
 
@@ -276,7 +276,7 @@ gene.names <- rownames(diff.expressed.genes)
 rownames(average.condition.values) <- gene.names
 
 pairwise.differences <- data.frame(Gene=as.numeric(gene.names), OCvLC=(average.condition.values[,2]-average.condition.values[,1]), ALAvLC=(average.condition.values[,3]-average.condition.values[,1]), ALAvOC=(average.condition.values[,3]-average.condition.values[,2]), LAvLC=(average.condition.values[,4]-average.condition.values[,1]), LAvOC=(average.condition.values[,4]-average.condition.values[,2]), ALAvLA=(average.condition.values[,3]-average.condition.values[,4]))
-#subtracts the expression values of the second condition from the first condition for each pairing, to determine whether each gene was up- or down-regulated
+# subtracts the expression values of the second condition from the first condition for each pairing, to determine whether each gene was up- or down-regulated
 
 OCvLC.difference <- pairwise.differences[,1:2]
 ALAvLC.difference <- pairwise.differences[,c(1,3)]
@@ -284,7 +284,7 @@ ALAvOC.difference <- pairwise.differences[,c(1,4)]
 LAvLC.difference <- pairwise.differences[,c(1,5)]
 LAvOC.difference <- pairwise.differences[,c(1,6)]
 ALAvLA.difference <- pairwise.differences[,c(1,7)]
-#combines the gene ID with the difference (positive or negative) for all ANOVA differentially expressed genes for each pairwise comparison
+# combines the gene ID with the difference (positive or negative) for all ANOVA differentially expressed genes for each pairwise comparison
 
 list.OCvLC <- OCvLC.difference[OCvLC.info,]
 list.ALAvLC <- ALAvLC.difference[ALAvLC.info,]
@@ -292,7 +292,7 @@ list.ALAvOC <- ALAvOC.difference[ALAvOC.info,]
 list.LAvLC <- LAvLC.difference[LAvLC.info,]
 list.LAvOC <- LAvOC.difference[LAvOC.info,]
 list.ALAvLA <- ALAvLA.difference[ALAvLA.info,]
-#reduces the genes to just those determined to be differentially expressed in the pairwise conditions by t tests
+# reduces the genes to just those determined to be differentially expressed in the pairwise conditions by t tests
 
 OCvLC.updown <- data.frame(Upregulated=(NA) ,Downregulated=(NA))
 ALAvLC.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
@@ -354,7 +354,7 @@ for (i in 1:nrow(list.ALAvLA)){
 		ALAvLA.updown[i,2] <- list.ALAvLA[i,1]
 	}
 }
-#puts gene ID into the up- or down-regulated column appropriately for each pariwise comparison
+# puts gene ID into the up- or down-regulated column appropriately for each pariwise comparison
 
 OCvLC.up <- na.omit(OCvLC.updown[,1])
 ALAvLC.up <- na.omit(ALAvLC.updown[,1])
@@ -369,7 +369,7 @@ ALAvOC.down <- na.omit(ALAvOC.updown[,2])
 LAvLC.down <- na.omit(LAvLC.updown[,2])
 LAvOC.down <- na.omit(LAvOC.updown[,2])
 ALAvLA.down <- na.omit(ALAvLA.updown[,2])
-#gets rid of NA values and separates the up- and down-regulated gene IDs into separate lists
+# gets rid of NA values and separates the up- and down-regulated gene IDs into separate lists
 
 
 ### Write Up- and Down-Regulated Genes to Files for FunNet ###

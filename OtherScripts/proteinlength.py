@@ -1,5 +1,5 @@
 lengths = dict()
-with open('fastainfo.txt') as f:
+with open('fastainfo2.txt') as f:
     for line in f:
         if line.startswith('>'):
             #line.rstrip()
@@ -14,5 +14,6 @@ with open('fastainfo.txt') as f:
    
 maxID = max(lengths, key=lengths.get)
 
-saved = open('finalproteins.txt', 'w')
+saved = open('finalproteins.txt', 'a')
 saved.write(maxID)
+saved.write('\n')

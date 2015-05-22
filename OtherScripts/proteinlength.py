@@ -13,4 +13,6 @@ with open('fastainfo.txt') as f:
             lengths[desc] = aalength
    
 maxID = max(lengths, key=lengths.get)
-print maxID
+
+saved = open('finalproteins.txt', 'w')
+saved.write(maxID)

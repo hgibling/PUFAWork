@@ -5,130 +5,62 @@
 ##		the XP_ ids were removed (predicted proteins)
 ##		the protein fasta sequences were run through several signal peptide prediction servers
 ##		a running list of genes/proteins with predicted signal peptide sequences was created
-##		the final list of genes of interest were those with signal peptide sequences as predicted by Signal-BLAST, TOPCONS, and SignalP (two levels of sensitivity)
+##		the final list of genes of interest were those with signal peptide sequences as predicted by Signal-BLAST, TOPCONS, and SignalP, and had evidence of secretion from the UniProt database
 
-library(dplyr)
+
 load("~/Desktop/SummerWork/PUFA.Rdata")
-
-interest <- read.csv("~/Desktop/SummerWork/GenesofInterest.csv", header=T)
-
-
-# remove gene ids with protein isoforms
-
-dupes <- which(duplicated(interest[,1]))
-interest <- interest[-dupes,]
-interest.tbldf <- tbl_df(interest)
-
-
-# work with sensitive SignalP results
-
-interest.sensitive.tbldf <- select(interest.tbldf, -SignalP4.1)
-
-
-# genes predicted by all 3 methods to have signal peptide regions
-
-sensitive3tbldf <- filter(interest.sensitive.tbldf, SignalBLAST==T, TOPCONS==T, SignalP.sensitive==T)
-sensitive3 <- as.data.frame(sensitive3tbldf)
-sensitive3ids <- sort(sensitive3[,1])
-
-
-# genes predicted by at least one method to have signal peptide regions
-
-interest.sensitive <- interest[,-4]
-sensitive.ids <- sort(interest.sensitive[,1])
-
+interest <- read.csv("~/Desktop/SummerWork/GenesofInterest.csv", header=F)
+interest <- c(interest[,1])
 
 # determine which genes of interest are DE in pairwise comparisons
 
-interest.in.pairwise <- function(interest, pairwise.list){
-	pos <- pairwise.list %in% interest
+interest.in.pairwise <- function(interest.list, pairwise.list){
+	pos <- pairwise.list %in% interest.list
 	pairwise.list[which(pos==T)]
-	#return interest.list
 }
 
-# DE predicted by all 3 methods
+# differentially expressed
 
-OCvLC.interest.s3 <- interest.in.pairwise(sensitive3ids, OCvLC.genes)
-ALAvLC.interest.s3 <- interest.in.pairwise(sensitive3ids, ALAvLC.genes)
-ALAvOC.interest.s3 <- interest.in.pairwise(sensitive3ids, ALAvOC.genes)
-LAvLC.interest.s3 <- interest.in.pairwise(sensitive3ids, LAvLC.genes)
-LAvOC.interest.s3 <- interest.in.pairwise(sensitive3ids, LAvOC.genes)
-ALAvLA.interest.s3 <- interest.in.pairwise(sensitive3ids, ALAvLA.genes)
-
-
-# up-regulated predicted by all 3 methods
-
-OCvLC.interest.s3.up <- interest.in.pairwise(sensitive3ids, OCvLC.up)
-ALAvLC.interest.s3.up <- interest.in.pairwise(sensitive3ids, ALAvLC.up)
-ALAvOC.interest.s3.up <- interest.in.pairwise(sensitive3ids, ALAvOC.up)
-LAvLC.interest.s3.up <- interest.in.pairwise(sensitive3ids, LAvLC.up)
-LAvOC.interest.s3.up <- interest.in.pairwise(sensitive3ids, LAvOC.up)
-ALAvLA.interest.s3.up <- interest.in.pairwise(sensitive3ids, ALAvLA.up)
+OCvLC.interest <- interest.in.pairwise(interest, OCvLC.genes)
+ALAvLC.interest <- interest.in.pairwise(interest, ALAvLC.genes)
+ALAvOC.interest <- interest.in.pairwise(interest, ALAvOC.genes)
+LAvLC.interest <- interest.in.pairwise(interest, LAvLC.genes)
+LAvOC.interest <- interest.in.pairwise(interest, LAvOC.genes)
+ALAvLA.interest <- interest.in.pairwise(interest, ALAvLA.genes)
 
 
-# down-regulated predicted by all 3 methods
+# up-regulated
 
-OCvLC.interest.s3.down <- interest.in.pairwise(sensitive3ids, OCvLC.down)
-ALAvLC.interest.s3.down <- interest.in.pairwise(sensitive3ids, ALAvLC.down)
-ALAvOC.interest.s3.down <- interest.in.pairwise(sensitive3ids, ALAvOC.down)
-LAvLC.interest.s3.down <- interest.in.pairwise(sensitive3ids, LAvLC.down)
-LAvOC.interest.s3.down <- interest.in.pairwise(sensitive3ids, LAvOC.down)
-ALAvLA.interest.s3.down <- interest.in.pairwise(sensitive3ids, ALAvLA.down)
-
-
-# DE predicted by at least one method
-
-OCvLC.interest.s <- interest.in.pairwise(sensitive.ids, OCvLC.genes)
-ALAvLC.interest.s <- interest.in.pairwise(sensitive.ids, ALAvLC.genes)
-ALAvOC.interest.s <- interest.in.pairwise(sensitive.ids, ALAvOC.genes)
-LAvLC.interest.s <- interest.in.pairwise(sensitive.ids, LAvLC.genes)
-LAvOC.interest.s <- interest.in.pairwise(sensitive.ids, LAvOC.genes)
-ALAvLA.interest.s <- interest.in.pairwise(sensitive.ids, ALAvLA.genes)
+OCvLC.interest.up <- interest.in.pairwise(interest, OCvLC.up)
+ALAvLC.interest.up <- interest.in.pairwise(interest, ALAvLC.up)
+ALAvOC.interest.up <- interest.in.pairwise(interest, ALAvOC.up)
+LAvLC.interest.up <- interest.in.pairwise(interest, LAvLC.up)
+LAvOC.interest.up <- interest.in.pairwise(interest, LAvOC.up)
+ALAvLA.interest.up <- interest.in.pairwise(interest, ALAvLA.up)
 
 
-# up-regulated predicted by at least one method
+# down-regulated
 
-OCvLC.interest.s.up <- interest.in.pairwise(sensitive.ids, OCvLC.up)
-ALAvLC.interest.s.up <- interest.in.pairwise(sensitive.ids, ALAvLC.up)
-ALAvOC.interest.s.up <- interest.in.pairwise(sensitive.ids, ALAvOC.up)
-LAvLC.interest.s.up <- interest.in.pairwise(sensitive.ids, LAvLC.up)
-LAvOC.interest.s.up <- interest.in.pairwise(sensitive.ids, LAvOC.up)
-ALAvLA.interest.s.up <- interest.in.pairwise(sensitive.ids, ALAvLA.up)
-
-
-# down-regulated predicted by at least one method
-
-OCvLC.interest.s.down <- interest.in.pairwise(sensitive.ids, OCvLC.down)
-ALAvLC.interest.s.down <- interest.in.pairwise(sensitive.ids, ALAvLC.down)
-ALAvOC.interest.s.down <- interest.in.pairwise(sensitive.ids, ALAvOC.down)
-LAvLC.interest.s.down <- interest.in.pairwise(sensitive.ids, LAvLC.down)
-LAvOC.interest.s.down <- interest.in.pairwise(sensitive.ids, LAvOC.down)
-ALAvLA.interest.s.down <- interest.in.pairwise(sensitive.ids, ALAvLA.down)
+OCvLC.interest.down <- interest.in.pairwise(interest, OCvLC.down)
+ALAvLC.interest.down <- interest.in.pairwise(interest, ALAvLC.down)
+ALAvOC.interest.down <- interest.in.pairwise(interest, ALAvOC.down)
+LAvLC.interest.down <- interest.in.pairwise(interest, LAvLC.down)
+LAvOC.interest.down <- interest.in.pairwise(interest, LAvOC.down)
+ALAvLA.interest.down <- interest.in.pairwise(interest, ALAvLA.down)
 
 
 # write DE numbers to table
 
-dir.create(paste(subsubdir.DE.pair, "DE Genes of Interest", sep="/"))
-subsubdir.DE.interest<-paste(subsubdir.DE.pair,"DE Genes of Interest/",sep="/")
+dir.create("~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest")
+subsubdir.DE.interest <- "~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest"
 
-interest.total.s3 <- c(length(OCvLC.interest.s3), length(ALAvLC.interest.s3), length(ALAvOC.interest.s3), length(LAvLC.interest.s3), length(LAvOC.interest.s3), length(ALAvLA.interest.s3))
-interest.up.s3 <- c(length(OCvLC.interest.s3.up), length(ALAvLC.interest.s3.up), length(ALAvOC.interest.s3.up), length(LAvLC.interest.s3.up), length(LAvOC.interest.s3.up), length(ALAvLA.interest.s3.up))
-interest.down.s3 <- c(length(OCvLC.interest.s3.down), length(ALAvLC.interest.s3.down), length(ALAvOC.interest.s3.down), length(LAvLC.interest.s3.down), length(LAvOC.interest.s3.down), length(ALAvLA.interest.s3.down))
+interest.total <- c(length(OCvLC.interest), length(ALAvLC.interest), length(ALAvOC.interest), length(LAvLC.interest), length(LAvOC.interest), length(ALAvLA.interest))
+interest.up <- c(length(OCvLC.interest.up), length(ALAvLC.interest.up), length(ALAvOC.interest.up), length(LAvLC.interest.up), length(LAvOC.interest.up), length(ALAvLA.interest.up))
+interest.down <- c(length(OCvLC.interest.down), length(ALAvLC.interest.down), length(ALAvOC.interest.down), length(LAvLC.interest.down), length(LAvOC.interest.down), length(ALAvLA.interest.down))
 
-interest.numbers.s3 <- data.frame(Comparison=pairwise.comparisons, Total=interest.total.s3, UpRegulated=interest.up.s3, Downregulated=interest.down.s3)
+interest.numbers <- data.frame(Comparison=pairwise.comparisons, Total=interest.total, UpRegulated=interest.up, Downregulated=interest.down)
 
-interest.s3.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence by all 3 methods", length(sensitive3ids))
+interest.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence with evidence of secretion", length(interest))
 
-interest.total.s <- c(length(OCvLC.interest.s), length(ALAvLC.interest.s), length(ALAvOC.interest.s), length(LAvLC.interest.s), length(LAvOC.interest.s), length(ALAvLA.interest.s))
-interest.up.s <- c(length(OCvLC.interest.s.up), length(ALAvLC.interest.s.up), length(ALAvOC.interest.s.up), length(LAvLC.interest.s.up), length(LAvOC.interest.s.up), length(ALAvLA.interest.s.up))
-interest.down.s <- c(length(OCvLC.interest.s.down), length(ALAvLC.interest.s.down), length(ALAvOC.interest.s.down), length(LAvLC.interest.s.down), length(LAvOC.interest.s.down), length(ALAvLA.interest.s.down))
-
-interest.numbers.s <- data.frame(Comparison=pairwise.comparisons, Total=interest.total.s, UpRegulated=interest.up.s, Downregulated=interest.down.s)
-
-interest.s.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence by at least one method", length(sensitive.ids))
-
-write.table(interest.numbers.s3, paste(subsubdir.DE.interest, "Genes of Interest Numbers 3 Methods.txt", sep=""), quote=F, row.names=F, sep="\t")
-write.table(c("\n", interest.s3.tally), paste(subsubdir.DE.interest, "Genes of Interest Numbers 3 Methods.txt", sep=""), append=T, quote=F, row.names=F, col.names=F, sep="\t")
-
-write.table(interest.numbers.s, paste(subsubdir.DE.interest, "Genes of Interest Numbers One or More.txt", sep=""), quote=F, row.names=F, sep="\t")
-write.table(c("\n", interest.s.tally), paste(subsubdir.DE.interest, "Genes of Interest Numbers One or More.txt", sep=""), append=T, quote=F, row.names=F, col.names=F, sep="\t")
+write.table(interest.numbers, paste(subsubdir.DE.interest, "Genes of Interest Numbers.txt", sep="/"), quote=F, row.names=F, sep="\t")
+write.table(c("\n", interest.tally), paste(subsubdir.DE.interest, "Genes of Interest Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")

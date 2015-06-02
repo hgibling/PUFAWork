@@ -11,6 +11,7 @@
 setwd("~/Desktop/SummerWork")
 load("PUFA.Rdata")
 load("PUFADE.Rdata")
+
 interest <- read.csv("~/Desktop/SummerWork/GenesofInterest.csv", header=T)
 interest.ev <- c(na.omit(interest[,1]))
 
@@ -106,9 +107,6 @@ ALAvLA.interest.pred.down <- interest.in.pairwise(interest.pred, ALAvLA.down)
 
 # write DE numbers to table
 
-dir.create("~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest")
-subsubdir.DE.interest <- "~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest"
-
 interest.pred.total <- c(length(OCvLC.interest.pred), length(ALAvLC.interest.pred), length(ALAvOC.interest.pred), length(LAvLC.interest.pred), length(LAvOC.interest.pred), length(ALAvLA.interest.pred))
 interest.pred.up <- c(length(OCvLC.interest.pred.up), length(ALAvLC.interest.pred.up), length(ALAvOC.interest.pred.up), length(LAvLC.interest.pred.up), length(LAvOC.interest.pred.up), length(ALAvLA.interest.pred.up))
 interest.pred.down <- c(length(OCvLC.interest.pred.down), length(ALAvLC.interest.pred.down), length(ALAvOC.interest.pred.down), length(LAvLC.interest.pred.down), length(LAvOC.interest.pred.down), length(ALAvLA.interest.pred.down))
@@ -118,5 +116,25 @@ interest.pred.numbers <- data.frame(Comparison=pairwise.comparisons, Total=inter
 interest.pred.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence", length(interest.pred))
 
 write.table(interest.pred.numbers, paste(subsubdir.DE.interest, "Genes of Interest Predicted Numbers.txt", sep="/"), quote=F, row.names=F, sep="\t")
-write.table(c("\n", interest.ev.tally), paste(subsubdir.DE.interest, "Genes of Interest Predicted Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")
+write.table(c("\n", interest.pred.tally), paste(subsubdir.DE.interest, "Genes of Interest Predicted Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")
 
+
+
+##### View Expression Values and Fold Changes for Each Gene for Each Condition #####
+
+interest.ev.values.pos <- as.numeric(rownames(average.condition.values)) %in% interest.ev
+interest.ev.values <- average.condition.values[which(interest.ev.values.pos==T),]
+
+interest.pred.values.pos <- as.numeric(rownames(average.condition.values)) %in% interest.pred
+interest.pred.values <- average.condition.values[which(interest.pred.values.pos==T),]
+
+pairwise.values.ev <- data.frame(Evidence=rownames(interest.ev.values), OCvLC=(interest.ev.values[,2]-interest.ev.values[,1]), ALAvLC=(interest.ev.values[,3]-interest.ev.values[,1]), ALAvOC=(interest.ev.values[,3]-interest.ev.values[,2]), LAvLC=(interest.ev.values[,4]-interest.ev.values[,1]), LAvOC=(interest.ev.values[,4]-interest.ev.values[,2]), ALAvLA=(interest.ev.values[,3]-interest.ev.values[,4]))
+
+pairwise.values.pred <- data.frame(Predicted=rownames(interest.pred.values), OCvLC=(interest.pred.values[,2]-interest.pred.values[,1]), ALAvLC=(interest.pred.values[,3]-interest.pred.values[,1]), ALAvOC=(interest.pred.values[,3]-interest.pred.values[,2]), LAvLC=(interest.pred.values[,4]-interest.pred.values[,1]), LAvOC=(interest.pred.values[,4]-interest.pred.values[,2]), ALAvLA=(interest.pred.values[,3]-interest.pred.values[,4]))
+
+
+# write to table
+
+write.table(pairwise.values.ev, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t")
+write.table(pairwise.values.pred, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t", append=T)
+# warning ok

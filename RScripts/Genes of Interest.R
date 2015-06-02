@@ -128,10 +128,9 @@ interest.ev.values <- average.condition.values[which(interest.ev.values.pos==T),
 interest.pred.values.pos <- as.numeric(rownames(average.condition.values)) %in% interest.pred
 interest.pred.values <- average.condition.values[which(interest.pred.values.pos==T),]
 
-pairwise.values.ev <- data.frame(Evidence=rownames(interest.ev.values), OCvLC=(interest.ev.values[,2]-interest.ev.values[,1]), ALAvLC=(interest.ev.values[,3]-interest.ev.values[,1]), ALAvOC=(interest.ev.values[,3]-interest.ev.values[,2]), LAvLC=(interest.ev.values[,4]-interest.ev.values[,1]), LAvOC=(interest.ev.values[,4]-interest.ev.values[,2]), ALAvLA=(interest.ev.values[,3]-interest.ev.values[,4]))
+pairwise.values.ev <- data.frame(Evidence=rownames(interest.ev.values), OCvLC=(2^(interest.ev.values[,2]-interest.ev.values[,1])), ALAvLC=(2^(interest.ev.values[,3]-interest.ev.values[,1])), ALAvOC=(2^(interest.ev.values[,3]-interest.ev.values[,2])), LAvLC=(2^(interest.ev.values[,4]-interest.ev.values[,1])), LAvOC=(2^(interest.ev.values[,4]-interest.ev.values[,2])), ALAvLA=(2^(interest.ev.values[,3]-interest.ev.values[,4])))
 
-pairwise.values.pred <- data.frame(Predicted=rownames(interest.pred.values), OCvLC=(interest.pred.values[,2]-interest.pred.values[,1]), ALAvLC=(interest.pred.values[,3]-interest.pred.values[,1]), ALAvOC=(interest.pred.values[,3]-interest.pred.values[,2]), LAvLC=(interest.pred.values[,4]-interest.pred.values[,1]), LAvOC=(interest.pred.values[,4]-interest.pred.values[,2]), ALAvLA=(interest.pred.values[,3]-interest.pred.values[,4]))
-
+pairwise.values.pred <- data.frame(Predicted=rownames(interest.pred.values), OCvLC=(2^(interest.pred.values[,2]-interest.pred.values[,1])), ALAvLC=(2^(interest.pred.values[,3]-interest.pred.values[,1])), ALAvOC=(2^(interest.pred.values[,3]-interest.pred.values[,2])), LAvLC=(2^(interest.pred.values[,4]-interest.pred.values[,1])), LAvOC=(2^(interest.pred.values[,4]-interest.pred.values[,2])), ALAvLA=(2^(interest.pred.values[,3]-interest.pred.values[,4])))
 
 # write to table
 

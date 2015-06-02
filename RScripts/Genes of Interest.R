@@ -8,11 +8,13 @@
 ##		the final list of genes of interest were those with signal peptide sequences as predicted by Signal-BLAST, TOPCONS, and SignalP, and had evidence of secretion from the UniProt database
 
 
-load("~/Desktop/SummerWork/PUFA.Rdata")
-interest <- read.csv("~/Desktop/SummerWork/GenesofInterest.csv", header=F)
-interest <- c(interest[,1])
+setwd("~/Desktop/SummerWork")
+load("PUFA.Rdata")
+load("PUFADE.Rdata")
+interest <- read.csv("~/Desktop/SummerWork/GenesofInterest.csv", header=T)
+interest.ev <- c(na.omit(interest[,1]))
 
-# determine which genes of interest are DE in pairwise comparisons
+# determine which genes of interest with evidence of secretion are DE in pairwise comparisons
 
 interest.in.pairwise <- function(interest.list, pairwise.list){
 	pos <- pairwise.list %in% interest.list
@@ -21,32 +23,32 @@ interest.in.pairwise <- function(interest.list, pairwise.list){
 
 # differentially expressed
 
-OCvLC.interest <- interest.in.pairwise(interest, OCvLC.genes)
-ALAvLC.interest <- interest.in.pairwise(interest, ALAvLC.genes)
-ALAvOC.interest <- interest.in.pairwise(interest, ALAvOC.genes)
-LAvLC.interest <- interest.in.pairwise(interest, LAvLC.genes)
-LAvOC.interest <- interest.in.pairwise(interest, LAvOC.genes)
-ALAvLA.interest <- interest.in.pairwise(interest, ALAvLA.genes)
+OCvLC.interest.ev <- interest.in.pairwise(interest.ev, OCvLC.genes)
+ALAvLC.interest.ev <- interest.in.pairwise(interest.ev, ALAvLC.genes)
+ALAvOC.interest.ev <- interest.in.pairwise(interest.ev, ALAvOC.genes)
+LAvLC.interest.ev <- interest.in.pairwise(interest.ev, LAvLC.genes)
+LAvOC.interest.ev <- interest.in.pairwise(interest.ev, LAvOC.genes)
+ALAvLA.interest.ev <- interest.in.pairwise(interest.ev, ALAvLA.genes)
 
 
 # up-regulated
 
-OCvLC.interest.up <- interest.in.pairwise(interest, OCvLC.up)
-ALAvLC.interest.up <- interest.in.pairwise(interest, ALAvLC.up)
-ALAvOC.interest.up <- interest.in.pairwise(interest, ALAvOC.up)
-LAvLC.interest.up <- interest.in.pairwise(interest, LAvLC.up)
-LAvOC.interest.up <- interest.in.pairwise(interest, LAvOC.up)
-ALAvLA.interest.up <- interest.in.pairwise(interest, ALAvLA.up)
+OCvLC.interest.ev.up <- interest.in.pairwise(interest.ev, OCvLC.up)
+ALAvLC.interest.ev.up <- interest.in.pairwise(interest.ev, ALAvLC.up)
+ALAvOC.interest.ev.up <- interest.in.pairwise(interest.ev, ALAvOC.up)
+LAvLC.interest.ev.up <- interest.in.pairwise(interest.ev, LAvLC.up)
+LAvOC.interest.ev.up <- interest.in.pairwise(interest.ev, LAvOC.up)
+ALAvLA.interest.ev.up <- interest.in.pairwise(interest.ev, ALAvLA.up)
 
 
 # down-regulated
 
-OCvLC.interest.down <- interest.in.pairwise(interest, OCvLC.down)
-ALAvLC.interest.down <- interest.in.pairwise(interest, ALAvLC.down)
-ALAvOC.interest.down <- interest.in.pairwise(interest, ALAvOC.down)
-LAvLC.interest.down <- interest.in.pairwise(interest, LAvLC.down)
-LAvOC.interest.down <- interest.in.pairwise(interest, LAvOC.down)
-ALAvLA.interest.down <- interest.in.pairwise(interest, ALAvLA.down)
+OCvLC.interest.ev.down <- interest.in.pairwise(interest.ev, OCvLC.down)
+ALAvLC.interest.ev.down <- interest.in.pairwise(interest.ev, ALAvLC.down)
+ALAvOC.interest.ev.down <- interest.in.pairwise(interest.ev, ALAvOC.down)
+LAvLC.interest.ev.down <- interest.in.pairwise(interest.ev, LAvLC.down)
+LAvOC.interest.ev.down <- interest.in.pairwise(interest.ev, LAvOC.down)
+ALAvLA.interest.ev.down <- interest.in.pairwise(interest.ev, ALAvLA.down)
 
 
 # write DE numbers to table
@@ -54,13 +56,67 @@ ALAvLA.interest.down <- interest.in.pairwise(interest, ALAvLA.down)
 dir.create("~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest")
 subsubdir.DE.interest <- "~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest"
 
-interest.total <- c(length(OCvLC.interest), length(ALAvLC.interest), length(ALAvOC.interest), length(LAvLC.interest), length(LAvOC.interest), length(ALAvLA.interest))
-interest.up <- c(length(OCvLC.interest.up), length(ALAvLC.interest.up), length(ALAvOC.interest.up), length(LAvLC.interest.up), length(LAvOC.interest.up), length(ALAvLA.interest.up))
-interest.down <- c(length(OCvLC.interest.down), length(ALAvLC.interest.down), length(ALAvOC.interest.down), length(LAvLC.interest.down), length(LAvOC.interest.down), length(ALAvLA.interest.down))
+interest.ev.total <- c(length(OCvLC.interest.ev), length(ALAvLC.interest.ev), length(ALAvOC.interest.ev), length(LAvLC.interest.ev), length(LAvOC.interest.ev), length(ALAvLA.interest.ev))
+interest.ev.up <- c(length(OCvLC.interest.ev.up), length(ALAvLC.interest.ev.up), length(ALAvOC.interest.ev.up), length(LAvLC.interest.ev.up), length(LAvOC.interest.ev.up), length(ALAvLA.interest.ev.up))
+interest.ev.down <- c(length(OCvLC.interest.ev.down), length(ALAvLC.interest.ev.down), length(ALAvOC.interest.ev.down), length(LAvLC.interest.ev.down), length(LAvOC.interest.ev.down), length(ALAvLA.interest.ev.down))
 
-interest.numbers <- data.frame(Comparison=pairwise.comparisons, Total=interest.total, UpRegulated=interest.up, Downregulated=interest.down)
+interest.ev.numbers <- data.frame(Comparison=pairwise.comparisons, Total=interest.ev.total, UpRegulated=interest.ev.up, Downregulated=interest.ev.down)
 
-interest.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence with evidence of secretion", length(interest))
+interest.ev.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence with evidence of secretion", length(interest.ev))
 
-write.table(interest.numbers, paste(subsubdir.DE.interest, "Genes of Interest Numbers.txt", sep="/"), quote=F, row.names=F, sep="\t")
-write.table(c("\n", interest.tally), paste(subsubdir.DE.interest, "Genes of Interest Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")
+write.table(interest.ev.numbers, paste(subsubdir.DE.interest, "Genes of Interest Evidence Numbers.txt", sep="/"), quote=F, row.names=F, sep="\t")
+write.table(c("\n", interest.ev.tally), paste(subsubdir.DE.interest, "Genes of Interest Evidence Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")
+
+
+
+## determine which genes of interest with evidence of secretion or predicted are DE in pairwise comparisons
+
+interest.pred <- c(na.omit(interest[,2]))
+
+
+# differentially expressed
+
+OCvLC.interest.pred <- interest.in.pairwise(interest.pred, OCvLC.genes)
+ALAvLC.interest.pred <- interest.in.pairwise(interest.pred, ALAvLC.genes)
+ALAvOC.interest.pred <- interest.in.pairwise(interest.pred, ALAvOC.genes)
+LAvLC.interest.pred <- interest.in.pairwise(interest.pred, LAvLC.genes)
+LAvOC.interest.pred <- interest.in.pairwise(interest.pred, LAvOC.genes)
+ALAvLA.interest.pred <- interest.in.pairwise(interest.pred, ALAvLA.genes)
+
+
+# up-regulated
+
+OCvLC.interest.pred.up <- interest.in.pairwise(interest.pred, OCvLC.up)
+ALAvLC.interest.pred.up <- interest.in.pairwise(interest.pred, ALAvLC.up)
+ALAvOC.interest.pred.up <- interest.in.pairwise(interest.pred, ALAvOC.up)
+LAvLC.interest.pred.up <- interest.in.pairwise(interest.pred, LAvLC.up)
+LAvOC.interest.pred.up <- interest.in.pairwise(interest.pred, LAvOC.up)
+ALAvLA.interest.pred.up <- interest.in.pairwise(interest.pred, ALAvLA.up)
+
+
+# down-regulated
+
+OCvLC.interest.pred.down <- interest.in.pairwise(interest.pred, OCvLC.down)
+ALAvLC.interest.pred.down <- interest.in.pairwise(interest.pred, ALAvLC.down)
+ALAvOC.interest.pred.down <- interest.in.pairwise(interest.pred, ALAvOC.down)
+LAvLC.interest.pred.down <- interest.in.pairwise(interest.pred, LAvLC.down)
+LAvOC.interest.pred.down <- interest.in.pairwise(interest.pred, LAvOC.down)
+ALAvLA.interest.pred.down <- interest.in.pairwise(interest.pred, ALAvLA.down)
+
+
+# write DE numbers to table
+
+dir.create("~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest")
+subsubdir.DE.interest <- "~/Desktop/PUFA Microarray Analysis/All 32 Arrays/Preprocessed Data/Filtered Genes Data/Differentially Expressed Gene Lists/Pairwise DE Genes/Genes of Interest"
+
+interest.pred.total <- c(length(OCvLC.interest.pred), length(ALAvLC.interest.pred), length(ALAvOC.interest.pred), length(LAvLC.interest.pred), length(LAvOC.interest.pred), length(ALAvLA.interest.pred))
+interest.pred.up <- c(length(OCvLC.interest.pred.up), length(ALAvLC.interest.pred.up), length(ALAvOC.interest.pred.up), length(LAvLC.interest.pred.up), length(LAvOC.interest.pred.up), length(ALAvLA.interest.pred.up))
+interest.pred.down <- c(length(OCvLC.interest.pred.down), length(ALAvLC.interest.pred.down), length(ALAvOC.interest.pred.down), length(LAvLC.interest.pred.down), length(LAvOC.interest.pred.down), length(ALAvLA.interest.pred.down))
+
+interest.pred.numbers <- data.frame(Comparison=pairwise.comparisons, Total=interest.pred.total, UpRegulated=interest.pred.up, Downregulated=interest.pred.down)
+
+interest.pred.tally <- c("Total DE genes of interest predicted to have a peptide signal sequence", length(interest.pred))
+
+write.table(interest.pred.numbers, paste(subsubdir.DE.interest, "Genes of Interest Predicted Numbers.txt", sep="/"), quote=F, row.names=F, sep="\t")
+write.table(c("\n", interest.ev.tally), paste(subsubdir.DE.interest, "Genes of Interest Predicted Numbers.txt", sep="/"), append=T, quote=F, row.names=F, col.names=F, sep="\t")
+

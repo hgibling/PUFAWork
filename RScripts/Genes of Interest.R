@@ -128,12 +128,60 @@ interest.ev.values <- average.condition.values[which(interest.ev.values.pos==T),
 interest.pred.values.pos <- as.numeric(rownames(average.condition.values)) %in% interest.pred
 interest.pred.values <- average.condition.values[which(interest.pred.values.pos==T),]
 
-pairwise.values.ev <- data.frame(Evidence=rownames(interest.ev.values), OCvLC=(2^(interest.ev.values[,2]-interest.ev.values[,1])), ALAvLC=(2^(interest.ev.values[,3]-interest.ev.values[,1])), ALAvOC=(2^(interest.ev.values[,3]-interest.ev.values[,2])), LAvLC=(2^(interest.ev.values[,4]-interest.ev.values[,1])), LAvOC=(2^(interest.ev.values[,4]-interest.ev.values[,2])), ALAvLA=(2^(interest.ev.values[,3]-interest.ev.values[,4])))
+pairwise.values.ev <- data.frame(OCvLC=(interest.ev.values[,2]-interest.ev.values[,1]), ALAvLC=(interest.ev.values[,3]-interest.ev.values[,1]), ALAvOC=(interest.ev.values[,3]-interest.ev.values[,2]), LAvLC=(interest.ev.values[,4]-interest.ev.values[,1]), LAvOC=(interest.ev.values[,4]-interest.ev.values[,2]), ALAvLA=(interest.ev.values[,3]-interest.ev.values[,4]))
 
-pairwise.values.pred <- data.frame(Predicted=rownames(interest.pred.values), OCvLC=(2^(interest.pred.values[,2]-interest.pred.values[,1])), ALAvLC=(2^(interest.pred.values[,3]-interest.pred.values[,1])), ALAvOC=(2^(interest.pred.values[,3]-interest.pred.values[,2])), LAvLC=(2^(interest.pred.values[,4]-interest.pred.values[,1])), LAvOC=(2^(interest.pred.values[,4]-interest.pred.values[,2])), ALAvLA=(2^(interest.pred.values[,3]-interest.pred.values[,4])))
+pairwise.ev.neg.OCvLC <- which(pairwise.values.ev[,1]<0)
+pairwise.ev.neg.ALAvLC <- which(pairwise.values.ev[,2]<0)
+pairwise.ev.neg.ALAvOC <- which(pairwise.values.ev[,3]<0)
+pairwise.ev.neg.LAvLC <- which(pairwise.values.ev[,4]<0)
+pairwise.ev.neg.LAvOC <- which(pairwise.values.ev[,5]<0)
+pairwise.ev.neg.ALAvLA <- which(pairwise.values.ev[,6]<0)
+
+pairwise.values.ev.abs <- 2^abs(pairwise.values.ev)
+
+make.neg <- function(dataframe, column, neg.positions){
+	for (i in 1:nrow(dataframe)){
+		if (i %in% neg.positions){
+			dataframe[i,column] <- dataframe[i,column]*(-1)
+		}
+	} 
+	return(dataframe[,column])
+}
+
+ev.neg.OCvLC <- make.neg(pairwise.values.ev.abs, 1, pairwise.ev.neg.OCvLC)
+ev.neg.ALAvLC <- make.neg(pairwise.values.ev.abs, 2, pairwise.ev.neg.ALAvLC)
+ev.neg.ALAvOC <- make.neg(pairwise.values.ev.abs, 3, pairwise.ev.neg.ALAvOC)
+ev.neg.LAvLC <- make.neg(pairwise.values.ev.abs, 4, pairwise.ev.neg.LAvLC)
+ev.neg.LAvOC <- make.neg(pairwise.values.ev.abs, 5, pairwise.ev.neg.LAvOC)
+ev.neg.ALAvLA <- make.neg(pairwise.values.ev.abs, 6, pairwise.ev.neg.ALAvLA)
+
+pairwise.ev.fc <- data.frame(Evidence=rownames(interest.ev.values), OCvLC=ev.neg.OCvLC, ALAvLC=ev.neg.ALAvLC, ALAvOC=ev.neg.ALAvOC, LAvLC=ev.neg.LAvLC, LAvOC=ev.neg.LAvOC, ALAvLA=ev.neg.ALAvLA)
+
+# predicted
+
+pairwise.values.pred <- data.frame(OCvLC=(interest.pred.values[,2]-interest.pred.values[,1]), ALAvLC=(interest.pred.values[,3]-interest.pred.values[,1]), ALAvOC=(interest.pred.values[,3]-interest.pred.values[,2]), LAvLC=(interest.pred.values[,4]-interest.pred.values[,1]), LAvOC=(interest.pred.values[,4]-interest.pred.values[,2]), ALAvLA=(interest.pred.values[,3]-interest.pred.values[,4]))
+
+pairwise.pred.neg.OCvLC <- which(pairwise.values.pred[,1]<0)
+pairwise.pred.neg.ALAvLC <- which(pairwise.values.pred[,2]<0)
+pairwise.pred.neg.ALAvOC <- which(pairwise.values.pred[,3]<0)
+pairwise.pred.neg.LAvLC <- which(pairwise.values.pred[,4]<0)
+pairwise.pred.neg.LAvOC <- which(pairwise.values.pred[,5]<0)
+pairwise.pred.neg.ALAvLA <- which(pairwise.values.pred[,6]<0)
+
+pairwise.values.pred.abs <- 2^abs(pairwise.values.pred)
+
+pred.neg.OCvLC <- make.neg(pairwise.values.pred.abs, 1, pairwise.pred.neg.OCvLC)
+pred.neg.ALAvLC <- make.neg(pairwise.values.pred.abs, 2, pairwise.pred.neg.ALAvLC)
+pred.neg.ALAvOC <- make.neg(pairwise.values.pred.abs, 3, pairwise.pred.neg.ALAvOC)
+pred.neg.LAvLC <- make.neg(pairwise.values.pred.abs, 4, pairwise.pred.neg.LAvLC)
+pred.neg.LAvOC <- make.neg(pairwise.values.pred.abs, 5, pairwise.pred.neg.LAvOC)
+pred.neg.ALAvLA <- make.neg(pairwise.values.pred.abs, 6, pairwise.pred.neg.ALAvLA)
+
+pairwise.pred.fc <- data.frame(Evidence=rownames(interest.pred.values), OCvLC=pred.neg.OCvLC, ALAvLC=pred.neg.ALAvLC, ALAvOC=pred.neg.ALAvOC, LAvLC=pred.neg.LAvLC, LAvOC=pred.neg.LAvOC, ALAvLA=pred.neg.ALAvLA)
+
 
 # write to table
 
-write.table(pairwise.values.ev, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t")
-write.table(pairwise.values.pred, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t", append=T)
+write.table(pairwise.ev.fc, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t")
+write.table(pairwise.pred.fc, paste(subsubdir.DE.interest, "Genes of Interest Values.txt", sep="/"), quote=F, row.names=F, sep="\t", append=T)
 # warning ok

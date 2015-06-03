@@ -177,7 +177,7 @@ pred.neg.LAvLC <- make.neg(pairwise.values.pred.abs, 4, pairwise.pred.neg.LAvLC)
 pred.neg.LAvOC <- make.neg(pairwise.values.pred.abs, 5, pairwise.pred.neg.LAvOC)
 pred.neg.ALAvLA <- make.neg(pairwise.values.pred.abs, 6, pairwise.pred.neg.ALAvLA)
 
-pairwise.pred.fc <- data.frame(Evidence=rownames(interest.pred.values), OCvLC=pred.neg.OCvLC, ALAvLC=pred.neg.ALAvLC, ALAvOC=pred.neg.ALAvOC, LAvLC=pred.neg.LAvLC, LAvOC=pred.neg.LAvOC, ALAvLA=pred.neg.ALAvLA)
+pairwise.pred.fc <- data.frame(Predicted=rownames(interest.pred.values), OCvLC=pred.neg.OCvLC, ALAvLC=pred.neg.ALAvLC, ALAvOC=pred.neg.ALAvOC, LAvLC=pred.neg.LAvLC, LAvOC=pred.neg.LAvOC, ALAvLA=pred.neg.ALAvLA)
 
 
 # write to table

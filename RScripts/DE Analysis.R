@@ -236,44 +236,15 @@ subsubdir.DE.pairA<-paste(subsubdir.DE.pair,"All DE Genes/",sep="/")
 
 write.table(OCvLC.genes, paste(subsubdir.DE.pairA, "OCvLC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
 write.table(ALAvLC.genes, paste(subsubdir.DE.pairA, "ALAvLC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
-write.table(ALAvOC.genes,paste(subsubdir.DE.pairA, "ALAvOC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
-write.table(LAvLC.genes,paste(subsubdir.DE.pairA, "LAvLC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
-write.table(LAvOC.genes,paste(subsubdir.DE.pairA, "LAvOC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
+write.table(ALAvOC.genes, paste(subsubdir.DE.pairA, "ALAvOC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
+write.table(LAvLC.genes, paste(subsubdir.DE.pairA, "LAvLC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
+write.table(LAvOC.genes, paste(subsubdir.DE.pairA, "LAvOC DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
 write.table(ALAvLA.genes, paste(subsubdir.DE.pairA, "ALAvLA DE Genes.txt", sep=""), quote=F, row.names=F, col.names=F)
 
 
 ##### Determine Up- and Down-Regulated Genes #####
 
-average.condition.names <- c(rep("LC", 8), rep("OC", 8), rep("ALA", 8), rep("LA", 8))
-
-condition.value.columns <- diff.expressed.matrix
-
-colnames(condition.value.columns) <- average.condition.names
-# replaces the column names representing each individual array number with general names representing the conditions, so that the expression values for each condition can be averaged (next steps)
-
-transposed.condition.values <- t(condition.value.columns)
-
-group.condition.values <- data.frame(Condition=average.condition.names,  transposed.condition.values)
-# warning is ok
-
-mean.condition.values <- aggregate(group.condition.values, by=list(group.condition.values[,1]), FUN=mean)
-# warning is ok
-# averages out the values for each condition for each gene
-
-combined.condition.values <- t(mean.condition.values)
-cvalues <- data.frame(combined.condition.values[-c(1,2),])
-
-LC.values <- as.numeric(levels(cvalues$X1))[cvalues$X1]
-OC.values <- as.numeric(levels(cvalues$X2))[cvalues$X2]
-ALA.values <- as.numeric(levels(cvalues$X3))[cvalues$X3]
-LA.values <- as.numeric(levels(cvalues$X4))[cvalues$X4]
-# the aggragate function results in the columns being identified as factors instead of numbers; this changes each number from a level of a factor to a numeric value
-
-average.condition.values <- data.frame(LC=LC.values, OC=OC.values, ALA=ALA.values, LA=LA.values)
-
-gene.names <- rownames(diff.expressed.genes)
-
-rownames(average.condition.values) <- gene.names
+average.condition.values <- data.frame(LC=rowMeans(diff.expressed.matrix[,1:8]), OC=rowMeans(diff.expressed.matrix[,9:16]), ALA=rowMeans(diff.expressed.matrix[,17:24]), LA=rowMeans(diff.expressed.matrix[,25:32]))
 
 pairwise.differences <- data.frame(Gene=as.numeric(gene.names), OCvLC=(average.condition.values[,2]-average.condition.values[,1]), ALAvLC=(average.condition.values[,3]-average.condition.values[,1]), ALAvOC=(average.condition.values[,3]-average.condition.values[,2]), LAvLC=(average.condition.values[,4]-average.condition.values[,1]), LAvOC=(average.condition.values[,4]-average.condition.values[,2]), ALAvLA=(average.condition.values[,3]-average.condition.values[,4]))
 # subtracts the expression values of the second condition from the first condition for each pairing, to determine whether each gene was up- or down-regulated

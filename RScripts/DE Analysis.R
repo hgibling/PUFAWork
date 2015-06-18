@@ -246,6 +246,8 @@ write.table(ALAvLA.genes, paste(subsubdir.DE.pairA, "ALAvLA DE Genes.txt", sep="
 
 average.condition.values <- data.frame(LC=rowMeans(diff.expressed.matrix[,1:8]), OC=rowMeans(diff.expressed.matrix[,9:16]), ALA=rowMeans(diff.expressed.matrix[,17:24]), LA=rowMeans(diff.expressed.matrix[,25:32]))
 
+gene.names <- rownames(diff.expressed.genes)
+
 pairwise.differences <- data.frame(Gene=as.numeric(gene.names), OCvLC=(average.condition.values[,2]-average.condition.values[,1]), ALAvLC=(average.condition.values[,3]-average.condition.values[,1]), ALAvOC=(average.condition.values[,3]-average.condition.values[,2]), LAvLC=(average.condition.values[,4]-average.condition.values[,1]), LAvOC=(average.condition.values[,4]-average.condition.values[,2]), ALAvLA=(average.condition.values[,3]-average.condition.values[,4]))
 # subtracts the expression values of the second condition from the first condition for each pairing, to determine whether each gene was up- or down-regulated
 
@@ -265,67 +267,26 @@ list.LAvOC <- LAvOC.difference[LAvOC.info,]
 list.ALAvLA <- ALAvLA.difference[ALAvLA.info,]
 # reduces the genes to just those determined to be differentially expressed in the pairwise conditions by t tests
 
-OCvLC.updown <- data.frame(Upregulated=(NA) ,Downregulated=(NA))
-ALAvLC.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
-ALAvOC.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
-LAvLC.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
-LAvOC.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
-ALAvLA.updown <- data.frame(Upregulated=(NA), Downregulated=(NA))
-
-for (i in 1:nrow(list.OCvLC)){
-	if (list.OCvLC[i,2]>0){
-		OCvLC.updown[i,1] <- list.OCvLC[i,1]
+up.down <- function(list){
+	output <- data.frame(Upregulated=NA, Downregulated=NA)
+	for (i in 1:nrow(list)){
+		if (list[i,2]>0){
+			output[i,1] <- list[i,1]
+		}
+		if (list[i,2]<0){
+			output[i,2] <- list[i,1]
+		}
 	}
-	if (list.OCvLC[i,2]<0){
-		OCvLC.updown[i,2] <- list.OCvLC[i,1]
-	}
-}
-
-for (i in 1:nrow(list.ALAvLC)){
-	if (list.ALAvLC[i,2]>0){
-		ALAvLC.updown[i,1] <- list.ALAvLC[i,1]
-	}
-	if (list.ALAvLC[i,2]<0){
-		ALAvLC.updown[i,2] <- list.ALAvLC[i,1]
-	}
-}
-
-for (i in 1:nrow(list.ALAvOC)){
-	if (list.ALAvOC[i,2]>0){
-		ALAvOC.updown[i,1] <- list.ALAvOC[i,1]
-	}
-	if (list.ALAvOC[i,2]<0){
-		ALAvOC.updown[i,2] <- list.ALAvOC[i,1]
-	}
-}
-
-for (i in 1:nrow(list.LAvLC)){
-	if (list.LAvLC[i,2]>0){
-		LAvLC.updown[i,1] <- list.LAvLC[i,1]
-	}
-	if (list.LAvLC[i,2]<0){
-		LAvLC.updown[i,2] <- list.LAvLC[i,1]
-	}
-}
-
-for (i in 1:nrow(list.LAvOC)){
-	if (list.LAvOC[i,2]>0){
-		LAvOC.updown[i,1] <- list.LAvOC[i,1]
-	}
-	if (list.LAvOC[i,2]<0){
-		LAvOC.updown[i,2] <- list.LAvOC[i,1]
-	}
-}
-
-for (i in 1:nrow(list.ALAvLA)){
-	if (list.ALAvLA[i,2]>0){
-		ALAvLA.updown[i,1] <- list.ALAvLA[i,1]
-	}
-	if (list.ALAvLA[i,2]<0){
-		ALAvLA.updown[i,2] <- list.ALAvLA[i,1]
-	}
+	return(output)
 }
 # puts gene ID into the up- or down-regulated column appropriately for each pariwise comparison
+
+OCvLC.updown <- up.down(list.OCvLC)
+ALAvLC.updown <- up.down(list.ALAvLC)
+ALAvOC.updown <- up.down(list.ALAvOC)
+LAvLC.updown <- up.down(list.LAvLC)
+LAvOC.updown <- up.down(list.LAvOC)
+ALAvLA.updown <- up.down(list.ALAvLA)
 
 OCvLC.up <- na.omit(OCvLC.updown[,1])
 ALAvLC.up <- na.omit(ALAvLC.updown[,1])

@@ -1,11 +1,26 @@
 ### All 4 Conditions ###
 
-first.line <- "#1.2"
-second.line <- c(nrow(no.duplicates), ncol(no.duplicates))
+# GCT File
+
+gct.first <- "#1.2"
+gct.second <- c(nrow(no.duplicates), ncol(no.duplicates))
 
 gsea.data <- data.frame(NAME=rownames(no.duplicates), Description=rep("Gene", nrow(no.duplicates)), no.duplicates)
 
-write.table(first.line, "GSEA for All.gct", quote=F, col.names=F, row.names=F)
-write.table(second.line, "GSEA for All.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(gct.first, "GSEA for All.gct", quote=F, col.names=F, row.names=F)
+write.table(gct.second, "GSEA for All.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
 write.table(gsea.data, "GSEA for All.gct", quote=F, row.names=F, append=T, sep="\t")
+
+
+# CLS File
+
+cls.first <- matrix(nrow=1, (c(ncol(no.duplicates), length(pca.conditions), 1)))
+cls.second <- matrix(nrow=1, c("#", pca.conditions))
+cls.third <- matrix(nrow=1, c(as.vector(conditions)))
+
+write.table(cls.first, "GSEA for All.cls", quote=F, col.names=F, row.names=F, sep="\t")
+write.table(cls.second, "GSEA for All.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(cls.third, "GSEA for All.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+
+
 

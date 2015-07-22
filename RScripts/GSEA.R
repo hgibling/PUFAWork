@@ -1,4 +1,16 @@
+load("~/Desktop/SummerWork/PUFA All.Rdata")
+
 ### All 4 Conditions ###
+
+## Convert Rat Gene IDs to Human Gene IDs (Entrez)
+library(AnnotationDbi)
+
+all.genes <- as.numeric(row.names(no.duplicates))
+
+human.ids <- idConverter(all.genes, srcSpecies="RATNO", destSpecies="HOMSA", srcIDType="EG", destIDType="EG")
+
+human.ids <- as.vector(human.ids)
+
 
 # GCT File
 

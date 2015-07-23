@@ -1,9 +1,9 @@
 load("~/Desktop/SummerWork/PUFA All.Rdata")
-
-### All 4 Conditions ###
-
-## Generate Gene Sets for Rat KEGG Pathways
 library(gage)
+library(stringr)
+
+
+### Generate Gene Sets for Rat KEGG Pathways
 
 all.genes <- as.numeric(row.names(no.duplicates))
 
@@ -20,6 +20,7 @@ for (i in 1:length(set.names)){
 	mat <- matrix(nrow=1, c(split.names[[i]][2], split.names[[i]][1], kegg.sets[[i]]))
 	write.table(mat, "Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
 }
+
 
 # GCT File
 

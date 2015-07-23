@@ -2,14 +2,18 @@ load("~/Desktop/SummerWork/PUFA All.Rdata")
 
 ### All 4 Conditions ###
 
-## Convert Rat Gene IDs to Human Gene IDs (Entrez)
-library(AnnotationDbi)
+## Generate Gene Sets for Rat KEGG Pathways
+library(gage)
 
 all.genes <- as.numeric(row.names(no.duplicates))
 
-human.ids <- idConverter(all.genes, srcSpecies="RATNO", destSpecies="HOMSA", srcIDType="EG", destIDType="EG")
+rat.gene.sets <- kegg.gsets(species="rat", id.type="entrez")
+rat.sets <- rat.gene.sets$kg.sets
 
-human.ids <- as.vector(human.ids)
+
+# GMX File
+
+
 
 
 # GCT File

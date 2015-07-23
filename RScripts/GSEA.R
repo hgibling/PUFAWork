@@ -8,13 +8,18 @@ library(gage)
 all.genes <- as.numeric(row.names(no.duplicates))
 
 rat.gene.sets <- kegg.gsets(species="rat", id.type="entrez")
-rat.sets <- rat.gene.sets$kg.sets
+kegg.sets <- rat.gene.sets$kg.sets
 
 
-# GMX File
+# GMT File
 
+set.names <- names(kegg.sets)
+split.names <- str_split(set.names, " ", n=2)
 
-
+for (i in 1:length(set.names)){
+	mat <- matrix(nrow=1, c(split.names[[i]][2], split.names[[i]][1], kegg.sets[[i]]))
+	write.table(mat, "Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
+}
 
 # GCT File
 

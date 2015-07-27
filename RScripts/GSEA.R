@@ -3,6 +3,7 @@ setwd("~/Desktop")
 library(gage)
 library(stringr)
 library(KEGGREST)
+library(dplyr)
 
 
 ### Generate Gene Sets for Rat KEGG Pathways
@@ -22,7 +23,7 @@ split.names <- str_split(set.names, " ", n=2)
 
 for (i in 1:length(set.names)){
 	mat <- matrix(nrow=1, c(split.names[[i]][2], split.names[[i]][1], kegg.sets[[i]]))
-	write.table(mat, "/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
+	write.table(mat, "~/Desktop/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
 }
 
 
@@ -40,7 +41,7 @@ for (i in 1:length(missing)){
 	get <- seq(1, length(full.genes), 2)
 	genes <- full.genes[get]
 	mat <- matrix(nrow=1, c(name, missing[i], genes))
-	write.table(mat, "/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
+	write.table(mat, "~/Desktop/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
 }
 
 
@@ -51,9 +52,9 @@ gct.second <- c(nrow(no.duplicates), ncol(no.duplicates))
 
 gsea.data <- data.frame(NAME=rownames(no.duplicates), Description=rep("Gene", nrow(no.duplicates)), no.duplicates)
 
-write.table(gct.first, "/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F)
-write.table(gct.second, "/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
-write.table(gsea.data, "/SummerWork/GSEA Expression.gct", quote=F, row.names=F, append=T, sep="\t")
+write.table(gct.first, "~/Desktop/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F)
+write.table(gct.second, "~/Desktop/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(gsea.data, "~/Desktop/SummerWork/GSEA Expression.gct", quote=F, row.names=F, append=T, sep="\t")
 
 
 # CLS File
@@ -62,13 +63,36 @@ cls.first <- matrix(nrow=1, (c(ncol(no.duplicates), length(pca.conditions), 1)))
 cls.second <- matrix(nrow=1, c("#", pca.conditions))
 cls.third <- matrix(nrow=1, c(as.vector(conditions)))
 
-write.table(cls.first, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, sep="\t")
-write.table(cls.second, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
-write.table(cls.third, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(cls.first, "~/Desktop/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, sep="\t")
+write.table(cls.second, "~/Desktop/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(cls.third, "~/Desktop/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
 
 
 ### Analyzing Results
 
+table.names <- matrix(nrow=1, c("Comparison", "No. Gene Sets", "Enriched Gene Sets"))
+write.table(table.names, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t")
 
+significant.gene.sets <- function(filename, comparison){
+	filename <- read.csv(paste("~/Desktop/GSEA Results/", filename, ".csv", sep=""), stringsAsFactors=F)
+	file.des <- arrange(filename, FDR.q.val)
+	sig.pos <- which(file.des$FDR.q.val<0.25) 
+	sig.sets <- file.des$NAME[sig.pos]
+	matr <- matrix(nrow=1, c(comparison, length(sig.sets), sig.sets))
+	write.table(matr, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t", append=T)
+}
+
+significant.gene.sets("OCvLC", "OCvLC upregulated")
+significant.gene.sets("LCvOC", "OCvLC downregulated")
+significant.gene.sets("ALAvLC", "ALAvLC upregulated")
+significant.gene.sets("LCvALA", "ALAvLC downregulated")
+significant.gene.sets("ALAvOC", "ALAvOC upregulated")
+significant.gene.sets("OCvALA", "ALAvOC downregulated")
+significant.gene.sets("LAvLC", "LAvLC upregulated")
+significant.gene.sets("LCvLA", "LAvLC downregulated")
+significant.gene.sets("LAvOC", "LAvOC upregulated")
+significant.gene.sets("OCvLA", "LAvOC downregulated")
+significant.gene.sets("ALAvLA", "ALAvLA upregulated")
+significant.gene.sets("LAvALA", "ALAvLA downregulated")
 
 

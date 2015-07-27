@@ -1,4 +1,5 @@
 load("~/Desktop/SummerWork/PUFA All.Rdata")
+setwd("~/Desktop")
 library(gage)
 library(stringr)
 library(KEGGREST)
@@ -12,6 +13,8 @@ rat.gene.sets <- kegg.gsets(species="rat", id.type="entrez")
 kegg.sets <- rat.gene.sets$kg.sets
 
 
+### Write Files for GSEA Analysis
+
 # GMT File
 
 set.names <- names(kegg.sets)
@@ -19,7 +22,7 @@ split.names <- str_split(set.names, " ", n=2)
 
 for (i in 1:length(set.names)){
 	mat <- matrix(nrow=1, c(split.names[[i]][2], split.names[[i]][1], kegg.sets[[i]]))
-	write.table(mat, "Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
+	write.table(mat, "/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
 }
 
 
@@ -37,7 +40,7 @@ for (i in 1:length(missing)){
 	get <- seq(1, length(full.genes), 2)
 	genes <- full.genes[get]
 	mat <- matrix(nrow=1, c(name, missing[i], genes))
-	write.table(mat, "Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
+	write.table(mat, "/SummerWork/Rat KEGG Sets.gmt", sep="\t", quote=F, row.names=F, col.names=F, append=T)
 }
 
 
@@ -48,9 +51,9 @@ gct.second <- c(nrow(no.duplicates), ncol(no.duplicates))
 
 gsea.data <- data.frame(NAME=rownames(no.duplicates), Description=rep("Gene", nrow(no.duplicates)), no.duplicates)
 
-write.table(gct.first, "GSEA for All.gct", quote=F, col.names=F, row.names=F)
-write.table(gct.second, "GSEA for All.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
-write.table(gsea.data, "GSEA for All.gct", quote=F, row.names=F, append=T, sep="\t")
+write.table(gct.first, "/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F)
+write.table(gct.second, "/SummerWork/GSEA Expression.gct", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(gsea.data, "/SummerWork/GSEA Expression.gct", quote=F, row.names=F, append=T, sep="\t")
 
 
 # CLS File
@@ -59,9 +62,13 @@ cls.first <- matrix(nrow=1, (c(ncol(no.duplicates), length(pca.conditions), 1)))
 cls.second <- matrix(nrow=1, c("#", pca.conditions))
 cls.third <- matrix(nrow=1, c(as.vector(conditions)))
 
-write.table(cls.first, "GSEA for All.cls", quote=F, col.names=F, row.names=F, sep="\t")
-write.table(cls.second, "GSEA for All.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
-write.table(cls.third, "GSEA for All.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(cls.first, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, sep="\t")
+write.table(cls.second, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+write.table(cls.third, "/SummerWork/GSEA Classes.cls", quote=F, col.names=F, row.names=F, append=T, sep="\t")
+
+
+### Analyzing Results
+
 
 
 

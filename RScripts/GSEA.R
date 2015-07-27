@@ -70,29 +70,43 @@ write.table(cls.third, "~/Desktop/SummerWork/GSEA Classes.cls", quote=F, col.nam
 
 ### Analyzing Results
 
-table.names <- matrix(nrow=1, c("Comparison", "No. Gene Sets", "Enriched Gene Sets"))
-write.table(table.names, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t")
-
 significant.gene.sets <- function(filename, comparison){
 	filename <- read.csv(paste("~/Desktop/GSEA Results/", filename, ".csv", sep=""), stringsAsFactors=F)
 	file.des <- arrange(filename, FDR.q.val)
 	sig.pos <- which(file.des$FDR.q.val<0.25) 
 	sig.sets <- file.des$NAME[sig.pos]
-	matr <- matrix(nrow=1, c(comparison, length(sig.sets), sig.sets))
-	write.table(matr, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t", append=T)
+	vec <- c(comparison, length(sig.sets), sig.sets)
+	return(vec)
 }
 
-significant.gene.sets("OCvLC", "OCvLC upregulated")
-significant.gene.sets("LCvOC", "OCvLC downregulated")
-significant.gene.sets("ALAvLC", "ALAvLC upregulated")
-significant.gene.sets("LCvALA", "ALAvLC downregulated")
-significant.gene.sets("ALAvOC", "ALAvOC upregulated")
-significant.gene.sets("OCvALA", "ALAvOC downregulated")
-significant.gene.sets("LAvLC", "LAvLC upregulated")
-significant.gene.sets("LCvLA", "LAvLC downregulated")
-significant.gene.sets("LAvOC", "LAvOC upregulated")
-significant.gene.sets("OCvLA", "LAvOC downregulated")
-significant.gene.sets("ALAvLA", "ALAvLA upregulated")
-significant.gene.sets("LAvALA", "ALAvLA downregulated")
+OCvLC.up.GSEA <- significant.gene.sets("OCvLC", "OCvLC upregulated")
+OCvLC.down.GSEA <- significant.gene.sets("LCvOC", "OCvLC downregulated")
+ALAvLC.up.GSEA <- significant.gene.sets("ALAvLC", "ALAvLC upregulated")
+ALAvLC.down.GSEA <- significant.gene.sets("LCvALA", "ALAvLC downregulated")
+ALAvOC.up.GSEA <- significant.gene.sets("ALAvOC", "ALAvOC upregulated")
+ALAvOC.down.GSEA <- significant.gene.sets("OCvALA", "ALAvOC downregulated")
+LAvLC.up.GSEA <- significant.gene.sets("LAvLC", "LAvLC upregulated")
+LAvLC.down.GSEA <- significant.gene.sets("LCvLA", "LAvLC downregulated")
+LAvOC.up.GSEA <- significant.gene.sets("LAvOC", "LAvOC upregulated")
+LAvOC.down.GSEA <- significant.gene.sets("OCvLA", "LAvOC downregulated")
+ALAvLA.up.GSEA <- significant.gene.sets("ALAvLA", "ALAvLA upregulated")
+ALAvLA.down.GSEA <- significant.gene.sets("LAvALA", "ALAvLA downregulated")
 
+n <- max(length(OCvLC.up.GSEA), length(OCvLC.down.GSEA), length(ALAvLC.up.GSEA), length(ALAvLC.down.GSEA), length(ALAvOC.up.GSEA), length(ALAvOC.down.GSEA), length(LAvLC.up.GSEA), length(LAvLC.down.GSEA), length(LAvOC.up.GSEA), length(LAvOC.down.GSEA), length(ALAvLA.up.GSEA), length(ALAvLA.down.GSEA))
+
+length(OCvLC.up.GSEA) <- n
+length(OCvLC.down.GSEA) <- n
+length(ALAvLC.up.GSEA) <- n
+length(ALAvLC.down.GSEA) <- n
+length(ALAvOC.up.GSEA) <- n
+length(ALAvOC.down.GSEA) <- n
+length(LAvLC.up.GSEA) <- n
+length(LAvLC.down.GSEA) <- n
+length(LAvOC.up.GSEA) <- n
+length(LAvOC.down.GSEA) <- n
+length(ALAvLA.up.GSEA) <- n
+length(ALAvLA.down.GSEA) <- n
+
+table <- cbind(OCvLC.up.GSEA, OCvLC.down.GSEA, ALAvLC.up.GSEA, ALAvLC.down.GSEA, ALAvOC.up.GSEA, ALAvOC.down.GSEA, LAvLC.up.GSEA, LAvLC.down.GSEA, LAvOC.up.GSEA, LAvOC.down.GSEA, ALAvLA.up.GSEA, ALAvLA.down.GSEA)
+write.table(table, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t")
 

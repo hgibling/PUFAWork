@@ -25,9 +25,9 @@ for (i in 1:length(set.names)){
 
 ## Get Missing KEGG Pathways
 
-# Manually compared list of Rat KEGG Pathway IDs obtained above to list on KEGG website: 25 pathways missing. 7 pathways are not able to have genes retrieved from keggGet--need to figure out solution
+# Manually compared list of Rat KEGG Pathway IDs obtained above to list on KEGG website: 2 pathways missing.
 
-missing <- c("rno00220", "rno04014", "rno04015", "rno04022", "rno04024", "rno04068", "rno04071", "rno04152", "rno04261", "rno04550", "rno04611", "rno04750", "rno04919", "rno04921", "rno04922", "rno04923", "rno05230", "rno05231")
+missing <- c("rno00220", "rno04923")
 
 for (i in 1:length(missing)){
 	pathway.info <- keggGet(missing[i])

@@ -1,21 +1,50 @@
 library(tidyr)
 library(dplyr)
 
-setwd("~/Desktop")
+setwd("~/Desktop/PCR Results")
 
-gene.rep.cq.means <- function(filename, genename){
+file.prep <- function(filename, genename){
 	file <- read.csv(filename)
-	just.rep.mean <- file[,c(5,7)]
-	dup.pos <- which(duplicated(just.rep.mean)==T)
-	just.mean <- just.rep.mean[-c(dup.pos),]
-	cq.mean.name <- paste("Av.Cq", genename, sep=".")
-	colnames(just.mean) <- c("Sample", cq.mean.name)
-	return(just.mean)
+	remove.excess <- file[, c(5:8)]
+	grouped <- group_by(remove.excess, Sample)
+	filtered.above <- filter(grouped, Cq.Std..Dev>0.2)
+	filtered.below <- filter(grouped, Cq.Std..Dev<=0.2) %>%
+		select(Sample, Cq.Mean)
+	remove.furthest <- dplyr::mutate(filtered.above, Median.Cq=median(Cq)) %>%
+		dplyr::mutate(Distance=abs(Median.Cq-Cq)) %>%
+		filter(!Distance==max(Distance)) %>%
+		select(Sample, Cq) %>%
+		dplyr::mutate(Cq.Mean=mean(Cq)) %>%
+		select(-Cq)
+	combined <- bind_rows(remove.furthest, filtered.below)
+	duplicates <- which(duplicated(combined$Sample)==T)
+	sample.means <- arrange(combined[-duplicates,], Sample)
+	colnames(sample.means) <- c("Sample", paste("Cq.Mean", genename, sep="."))
+	wells.removed <- nrow(file)-nrow(combined)
+	print(c("Number of wells removed:", wells.removed))
+	return(sample.means)
 }
 
-rn18s <- gene.rep.cq.means("Rn18s check.csv", "Rn18s")
+Rn18s.cDNA1 <- file.prep("new cDNA1 Rn18s.csv", "Rn18s")
 # file name and gene name must be in quotes
-angptl4 <- gene.rep.cq.means("Angptl4 check.csv", "Angptl4")
+Adam9.cDNA1 <- file.prep("new cDNA1 Adam9.csv", "Adam9")
+Col3a1.cDNA1 <- file.prep("new cDNA1 Col3a1.csv", "Col3a1")
+Col15a1.cDNA1 <- file.prep("new cDNA1 Col15a1.csv", "Col15a1")
+Lgi1.cDNA1 <- file.prep("new cDNA1 Lgi1.csv", "Lgi1")
+Lyz2.cDNA1 <- file.prep("new cDNA1 Lyz2.csv", "Lyz2")
+Pdgfd.cDNA1 <- file.prep("new cDNA1 Pdgfd.csv", "Pdgfd")
+Vwa7.cDNA1 <- file.prep("new cDNA1 Vwa7.csv", "Vwa7")
+
+Rn18s.cDNA2 <- file.prep("new cDNA2 Rn18s.csv", "Rn18s")
+Angptl2.cDNA2 <- file.prep("new cDNA2 Angptl2.csv", "Angptl2")
+Angptl4.cDNA2 <- file.prep("new cDNA2 Angptl4.csv", "Angptl4")
+Hmcn1.cDNA2 <- file.prep("new cDNA2 Hmcn1.csv", "Hmcn1")
+Igf1.cDNA2 <- file.prep("new cDNA2 Igf1.csv", "Igf1")
+Nrp1.cDNA2 <- file.prep("new cDNA2 Nrp1.csv", "Nrp1")
+Ntn4.cDNA2 <- file.prep("new cDNA2 Ntn4.csv", "Ntn4")
+St3gal2.cDNA2 <- file.prep("new cDNA2 St3gal2.csv", "St3gal2")
+Wnt16.cDNA2 <- file.prep("new cDNA2 Wnt16.csv", "Wnt16")
+
 
 compare <- merge(rn18s, angptl4)
 compare <- separate(compare, col=Sample, into=c("Sample", "Replicate"))

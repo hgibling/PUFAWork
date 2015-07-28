@@ -75,8 +75,8 @@ significant.gene.sets <- function(filename, comparison){
 	file.des <- arrange(filename, FDR.q.val)
 	sig.pos <- which(file.des$FDR.q.val<0.25) 
 	sig.sets <- file.des$NAME[sig.pos]
-	vec <- c(comparison, length(sig.sets), sig.sets)
-	return(vec)
+	mat <- matrix(nrow=1, c(comparison, length(sig.sets), sig.sets))
+	return(mat)
 }
 
 OCvLC.up.GSEA <- significant.gene.sets("OCvLC", "OCvLC upregulated")
@@ -92,21 +92,7 @@ LAvOC.down.GSEA <- significant.gene.sets("OCvLA", "LAvOC downregulated")
 ALAvLA.up.GSEA <- significant.gene.sets("ALAvLA", "ALAvLA upregulated")
 ALAvLA.down.GSEA <- significant.gene.sets("LAvALA", "ALAvLA downregulated")
 
-n <- max(length(OCvLC.up.GSEA), length(OCvLC.down.GSEA), length(ALAvLC.up.GSEA), length(ALAvLC.down.GSEA), length(ALAvOC.up.GSEA), length(ALAvOC.down.GSEA), length(LAvLC.up.GSEA), length(LAvLC.down.GSEA), length(LAvOC.up.GSEA), length(LAvOC.down.GSEA), length(ALAvLA.up.GSEA), length(ALAvLA.down.GSEA))
+table <- t(rbind.fill.matrix(OCvLC.up.GSEA, OCvLC.down.GSEA, ALAvLC.up.GSEA, ALAvLC.down.GSEA, ALAvOC.up.GSEA, ALAvOC.down.GSEA, LAvLC.up.GSEA, LAvLC.down.GSEA, LAvOC.up.GSEA, LAvOC.down.GSEA, ALAvLA.up.GSEA, ALAvLA.down.GSEA))
 
-length(OCvLC.up.GSEA) <- n
-length(OCvLC.down.GSEA) <- n
-length(ALAvLC.up.GSEA) <- n
-length(ALAvLC.down.GSEA) <- n
-length(ALAvOC.up.GSEA) <- n
-length(ALAvOC.down.GSEA) <- n
-length(LAvLC.up.GSEA) <- n
-length(LAvLC.down.GSEA) <- n
-length(LAvOC.up.GSEA) <- n
-length(LAvOC.down.GSEA) <- n
-length(ALAvLA.up.GSEA) <- n
-length(ALAvLA.down.GSEA) <- n
-
-table <- cbind(OCvLC.up.GSEA, OCvLC.down.GSEA, ALAvLC.up.GSEA, ALAvLC.down.GSEA, ALAvOC.up.GSEA, ALAvOC.down.GSEA, LAvLC.up.GSEA, LAvLC.down.GSEA, LAvOC.up.GSEA, LAvOC.down.GSEA, ALAvLA.up.GSEA, ALAvLA.down.GSEA)
 write.table(table, "Significant GSEA Results.txt", quote=F, row.names=F, col.names=F, sep="\t")
 

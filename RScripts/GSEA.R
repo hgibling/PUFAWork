@@ -4,6 +4,7 @@ library(gage)
 library(stringr)
 library(KEGGREST)
 library(dplyr)
+library(plyr)
 
 
 ### Generate Gene Sets for Rat KEGG Pathways

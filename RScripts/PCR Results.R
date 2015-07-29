@@ -38,7 +38,7 @@ Adam9.cDNA1 <- gene.prep("new cDNA1 Adam9.csv")
 Col3a1.cDNA1 <- gene.prep("new cDNA1 Col3a1.csv")
 Col15a1.cDNA1 <- gene.prep("new cDNA1 Col15a1.csv")
 Lgi1.cDNA1 <- gene.prep("new cDNA1 Lgi1.csv")
-Lyz2.cDNA1 <- gene.prep("new cDNA1 Lyz2.csv")
+#Lyz2.cDNA1 <- gene.prep("new cDNA1 Lyz2.csv")
 Pdgfd.cDNA1 <- gene.prep("new cDNA1 Pdgfd.csv")
 Vwa7.cDNA1 <- gene.prep("new cDNA1 Vwa7.csv")
 
@@ -69,7 +69,7 @@ Adam9.normalized <- normalized.gene(Adam9.cDNA1, Rn18s.cDNA1)
 Col3a1.normalized <- normalized.gene(Col3a1.cDNA1, Rn18s.cDNA1)
 Col15a1.normalized <- normalized.gene(Col15a1.cDNA1, Rn18s.cDNA1)
 Lgi1.normalized <- normalized.gene(Lgi1.cDNA1, Rn18s.cDNA1)
-Lyz2.normalized <- normalized.gene(Lyz2.cDNA1, Rn18s.cDNA1)
+#Lyz2.normalized <- normalized.gene(Lyz2.cDNA1, Rn18s.cDNA1)
 Pdgfd.normalized <- normalized.gene(Pdgfd.cDNA1, Rn18s.cDNA1)
 Vwa7.normalized <- normalized.gene(Vwa7.cDNA1, Rn18s.cDNA1)
 
@@ -95,6 +95,11 @@ fold.change <- function(norm.gene, genename){
 	ALAvLA.fc <- 2^((-1)*(norm.gene[1,2]-norm.gene[2,2]))
 	results <- data.frame(genename, OCvLC.fc, ALAvLC.fc, ALAvOC.fc, LAvLC.fc, LAvOC.fc, ALAvLA.fc)
 	colnames(results) <- c("GeneName", "OCvLC", "ALAvLC", "ALAvOC", "LAvLC", "LAvOC", "ALAvLA")
+	for (i in 2:ncol(results)){
+		if (results[1,i]<1){
+			results[1,i] <- -1/(results[1,i])
+		}
+	}
 	return(results)
 }
 
@@ -113,49 +118,9 @@ St3gal2.fc <- fold.change(St3gal2.normalized, "St3gal2")
 Vwa7.fc <- fold.change(Vwa7.normalized, "Vwa7")
 Wnt16.fc <- fold.change(Wnt16.normalized, "Wnt16")
 
-Lyz2.fc <- fold.change(Lyz2.normalized, "Lyz2")
+#Lyz2.fc <- fold.change(Lyz2.normalized, "Lyz2")
 
 PCR.results <- rbind(Adam9.fc, Angptl2.fc, Angptl4.fc, Col15a1.fc, Col3a1.fc, Hmcn1.fc, Igf1.fc, Lgi1.fc, Nrp1.fc, Ntn4.fc, Pdgfd.fc, St3gal2.fc, Vwa7.fc, Wnt16.fc)
 
-
-
-OCvLC.dcq <- normalized[4,4]-normalized[3,4]
-OCvLC.fc <- 2^((-1)*OCvLC.dcq)
-# 2^ because every Cq difference equals a doubling of the strand, and -1 because lower Cq means there is more product to be detected earlier and thus the gene is present in greater amounts
-
-ALAvLC.dcq <- normalized[1,4]-normalized[3,4]
-ALAvLC.fc <- 2^((-1)*ALAvLC.dcq)
-
-LAvLC.dcq <- normalized[2,4]-normalized[3,4]
-LAvLC.fc <- 2^((-1)*LAvLC.dcq)
-
-
-### other way ###
-
-rn18s.summarized <- separate(rn18s, col=Sample, into=c("Sample", "Replicate"))
-rn18s.summarized <- rn18s.summarized[,-2]
-rn18s.just <- group_by(rn18s.summarized, Sample) %>% summarize(MeanCqRn18s=mean(Av.Cq.Rn18s))
-
-angptl4.summarized <- separate(angptl4, col=Sample, into=c("Sample", "Replicate"))
-angptl4.summarized <- angptl4.summarized[,-2]
-angptl4.just <- group_by(angptl4.summarized, Sample) %>% summarize(MeanCqangptl4=mean(Av.Cq.Angptl4))
-
-normalized2 <- angptl4.just[,2]-rn18s.just[,2]
-
-OCvLC.dcq2 <- normalized2[4,]-normalized2[3,]
-OCvLC.fc2 <- 2^((-1)*OCvLC.dcq2)
-
-ALAvLC.dcq2 <- normalized2[1,]-normalized2[3,]
-ALAvLC.fc2 <- 2^((-1)*ALAvLC.dcq2)
-
-LAvLC.dcq2 <- normalized2[2,]-normalized2[3,]
-LAvLC.fc2 <- 2^((-1)*LAvLC.dcq2)
-
-
-### other other way ###
-
-each.norm <- mutate(compare, Normalized=Av.Cq.Angptl4-Av.Cq.Rn18s)
-grouped <- group_by(each.norm, Sample)
-each.dcq <- summarize(grouped, MeanCqAngptl4=mean(Normalized))
-
+write.table(PCR.results, "~/Desktop/PCR fold changes.csv", row.names=F, col.names=T, quote=F, sep=",")
 

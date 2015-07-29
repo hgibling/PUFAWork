@@ -63,6 +63,28 @@ normalized.gene <- function(gene, housekeeping){
 }
 
 
+Adam9.normalized <- normalized.gene(Adam9.cDNA1, Rn18s.cDNA1)
+Col3a1.normalized <- normalized.gene(Col3a1.cDNA1, Rn18s.cDNA1)
+Col15a1.normalized <- normalized.gene(Col15a1.cDNA1, Rn18s.cDNA1)
+Lgi1.normalized <- normalized.gene(Lgi1.cDNA1, Rn18s.cDNA1)
+Lyz2.normalized <- normalized.gene(Lyz2.cDNA1, Rn18s.cDNA1)
+Pdgfd.normalized <- normalized.gene(Pdgfd.cDNA1, Rn18s.cDNA1)
+Vwa7.normalized <- normalized.gene(Vwa7.cDNA1, Rn18s.cDNA1)
+
+Angptl2.normalized <- normalized.gene(Angptl2.cDNA2, Rn18s.cDNA2)
+Angptl4.normalized <- normalized.gene(Angptl4.cDNA2, Rn18s.cDNA2)
+Hmcn1.normalized <- normalized.gene(Hmcn1.cDNA2, Rn18s.cDNA2)
+Igf1.normalized <- normalized.gene(Igf1.cDNA2, Rn18s.cDNA2)
+Nrp1.normalized <- normalized.gene(Nrp1.cDNA2, Rn18s.cDNA2)
+Ntn4.normalized <- normalized.gene(Ntn4.cDNA2, Rn18s.cDNA2)
+St3gal2.normalized <- normalized.gene(St3gal2.cDNA2, Rn18s.cDNA2)
+Wnt16.normalized <- normalized.gene(Wnt16.cDNA2, Rn18s.cDNA2)
+
+
+
+
+
+
 
 OCvLC.dcq <- normalized[4,4]-normalized[3,4]
 OCvLC.fc <- 2^((-1)*OCvLC.dcq)

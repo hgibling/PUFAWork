@@ -50,18 +50,19 @@ Ntn4.cDNA2 <- gene.prep("new cDNA2 Ntn4.csv")
 St3gal2.cDNA2 <- gene.prep("new cDNA2 St3gal2.csv")
 Wnt16.cDNA2 <- gene.prep("new cDNA2 Wnt16.csv")
 
-normalize.gene <- function(genename, gene.cDNA, housekeeping.cDNA){
-	compare <- join(gene.cDNA, housekeeping.cDNA, by="Sample")
-	normalized <- mutate(compare, Normalized.Cq=(paste("Cq.Mean", genename, sep=".")-Cq.Mean.Rn18s))
+
+# Normalize the Cq values of the gene of interest for each sample by subtracting the Cq values from the housekeeping gene, then find the mean Cq for each condition
+normalized.gene <- function(gene, housekeeping){
+	compare <- join(gene, housekeeping, by="Sample")
+	normalized <- mutate(compare, Normalized.Cq=Gene.Cq.Mean-Housekeeping.Cq.Mean) %>%
+		select(Sample, Normalized.Cq)
+	separated <- separate(normalized, col=Sample, into=c("Sample", "Replicate"))
+	summarized <- group_by(separated, Sample) %>%
+		dplyr::summarize(Average.Cq=mean(Normalized.Cq))
+		return(summarized)
 }
 
 
-compare <- merge(rn18s, angptl4)
-compare <- separate(compare, col=Sample, into=c("Sample", "Replicate"))
-compare <- compare[,-2]
-compare.just <- group_by(compare, Sample) %>% summarize(MeanCqRn18s=mean(Av.Cq.Rn18s), MeanCqAngptl4=mean(Av.Cq.Angptl4))
-
-normalized <- mutate(compare.just, Normalized=MeanCqAngptl4-MeanCqRn18s)
 
 OCvLC.dcq <- normalized[4,4]-normalized[3,4]
 OCvLC.fc <- 2^((-1)*OCvLC.dcq)

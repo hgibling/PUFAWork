@@ -3,47 +3,57 @@ library(dplyr)
 
 setwd("~/Desktop/PCR Results")
 
-file.prep <- function(filename, genename){
+gene.prep <- function(filename){
 	file <- read.csv(filename)
 	remove.excess <- file[, c(5:8)]
 	grouped <- group_by(remove.excess, Sample)
 	filtered.above <- filter(grouped, Cq.Std..Dev>0.2)
 	filtered.below <- filter(grouped, Cq.Std..Dev<=0.2) %>%
-		select(Sample, Cq.Mean)
+		select(Sample, Gene.Cq.Mean=Cq.Mean)
 	remove.furthest <- dplyr::mutate(filtered.above, Median.Cq=median(Cq)) %>%
 		dplyr::mutate(Distance=abs(Median.Cq-Cq)) %>%
 		filter(!Distance==max(Distance)) %>%
 		select(Sample, Cq) %>%
-		dplyr::mutate(Cq.Mean=mean(Cq)) %>%
+		dplyr::mutate(Gene.Cq.Mean=mean(Cq)) %>%
 		select(-Cq)
 	combined <- bind_rows(remove.furthest, filtered.below)
 	duplicates <- which(duplicated(combined$Sample)==T)
 	sample.means <- arrange(combined[-duplicates,], Sample)
-	colnames(sample.means) <- c("Sample", paste("Cq.Mean", genename, sep="."))
 	wells.removed <- nrow(file)-nrow(combined)
 	print(c("Number of wells removed:", wells.removed))
 	return(sample.means)
 }
 
-Rn18s.cDNA1 <- file.prep("new cDNA1 Rn18s.csv", "Rn18s")
-# file name and gene name must be in quotes
-Adam9.cDNA1 <- file.prep("new cDNA1 Adam9.csv", "Adam9")
-Col3a1.cDNA1 <- file.prep("new cDNA1 Col3a1.csv", "Col3a1")
-Col15a1.cDNA1 <- file.prep("new cDNA1 Col15a1.csv", "Col15a1")
-Lgi1.cDNA1 <- file.prep("new cDNA1 Lgi1.csv", "Lgi1")
-Lyz2.cDNA1 <- file.prep("new cDNA1 Lyz2.csv", "Lyz2")
-Pdgfd.cDNA1 <- file.prep("new cDNA1 Pdgfd.csv", "Pdgfd")
-Vwa7.cDNA1 <- file.prep("new cDNA1 Vwa7.csv", "Vwa7")
+housekeeping.prep <- function(filename){
+	output <- gene.prep(filename)
+	colnames(output) <- c("Sample", "Housekeeping.Cq.Mean")
+	return(output)
+}
 
-Rn18s.cDNA2 <- file.prep("new cDNA2 Rn18s.csv", "Rn18s")
-Angptl2.cDNA2 <- file.prep("new cDNA2 Angptl2.csv", "Angptl2")
-Angptl4.cDNA2 <- file.prep("new cDNA2 Angptl4.csv", "Angptl4")
-Hmcn1.cDNA2 <- file.prep("new cDNA2 Hmcn1.csv", "Hmcn1")
-Igf1.cDNA2 <- file.prep("new cDNA2 Igf1.csv", "Igf1")
-Nrp1.cDNA2 <- file.prep("new cDNA2 Nrp1.csv", "Nrp1")
-Ntn4.cDNA2 <- file.prep("new cDNA2 Ntn4.csv", "Ntn4")
-St3gal2.cDNA2 <- file.prep("new cDNA2 St3gal2.csv", "St3gal2")
-Wnt16.cDNA2 <- file.prep("new cDNA2 Wnt16.csv", "Wnt16")
+Rn18s.cDNA1 <- housekeeping.prep("new cDNA1 Rn18s.csv")
+# file name and gene name must be in quotes
+Adam9.cDNA1 <- gene.prep("new cDNA1 Adam9.csv")
+Col3a1.cDNA1 <- gene.prep("new cDNA1 Col3a1.csv")
+Col15a1.cDNA1 <- gene.prep("new cDNA1 Col15a1.csv")
+Lgi1.cDNA1 <- gene.prep("new cDNA1 Lgi1.csv")
+Lyz2.cDNA1 <- gene.prep("new cDNA1 Lyz2.csv")
+Pdgfd.cDNA1 <- gene.prep("new cDNA1 Pdgfd.csv")
+Vwa7.cDNA1 <- gene.prep("new cDNA1 Vwa7.csv")
+
+Rn18s.cDNA2 <- housekeeping.prep("new cDNA2 Rn18s.csv")
+Angptl2.cDNA2 <- gene.prep("new cDNA2 Angptl2.csv")
+Angptl4.cDNA2 <- gene.prep("new cDNA2 Angptl4.csv")
+Hmcn1.cDNA2 <- gene.prep("new cDNA2 Hmcn1.csv")
+Igf1.cDNA2 <- gene.prep("new cDNA2 Igf1.csv")
+Nrp1.cDNA2 <- gene.prep("new cDNA2 Nrp1.csv")
+Ntn4.cDNA2 <- gene.prep("new cDNA2 Ntn4.csv")
+St3gal2.cDNA2 <- gene.prep("new cDNA2 St3gal2.csv")
+Wnt16.cDNA2 <- gene.prep("new cDNA2 Wnt16.csv")
+
+normalize.gene <- function(genename, gene.cDNA, housekeeping.cDNA){
+	compare <- join(gene.cDNA, housekeeping.cDNA, by="Sample")
+	normalized <- mutate(compare, Normalized.Cq=(paste("Cq.Mean", genename, sep=".")-Cq.Mean.Rn18s))
+}
 
 
 compare <- merge(rn18s, angptl4)

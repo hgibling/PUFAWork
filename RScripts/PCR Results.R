@@ -172,15 +172,14 @@ for (i in 1:nrow(matbind)){
 	pcr.ttest.results[i,6] <- pv[1,1]
 }
 
-pcr.results.sig <- PCR.results[,-1]
-rownames(pcr.results.sig) <- PCR.results[,1]
+pcr.results.sig <- PCR.results
 
 for (i in 1:nrow(pcr.ttest.results)){
 	for (j in 1:ncol(pcr.ttest.results)){
 		if (pcr.ttest.results[i,j] > 0.05){
-			pcr.results.sig[i,j] <- NA
+			pcr.results.sig[i,j+1] <- NA
 		}
 	}
 }
 
-write.table(pcr.results.sig, "~/Desktop/Significant PCR fold changes.csv", row.names=T, col.names=T, quote=F, sep=",")
+write.table(pcr.results.sig, "~/Desktop/Significant PCR fold changes.csv", row.names=F, col.names=T, quote=F, sep=",")

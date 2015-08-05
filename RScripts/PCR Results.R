@@ -154,7 +154,7 @@ St3gal2.ttest <- ttest.fc(St3gal2.cDNA2, Rn18s.cDNA2, "St3gal2")
 Vwa7.ttest <- ttest.fc(Vwa7.cDNA1, Rn18s.cDNA1, "Vwa7")
 Wnt16.ttest <- ttest.fc(Wnt16.cDNA2, Rn18s.cDNA2, "Wnt16")
 
-matbind <- rbind(Adam9.ttest, Angptl2.ttest, Angptl4.ttest, Col15a1.ttest, Col3a1.ttest, Hmcn1.ttest, Igf1.ttest, Lgi1.ttest, Nrp1.ttest, Ntn4.ttest, Pdgfd.ttest, St3gal2.ttest, Vwa7.ttest, Wnt16.ttest)
+matbind <- rbind(Adam9.ttest, Angptl2.ttest, Angptl4.ttest, Col15a1.ttest, Col3a1.ttest, Hmcn1.ttest, Igf1.ttest, Lgi1.ttest, Lyz2.ttest, Nrp1.ttest, Ntn4.ttest, Pdgfd.ttest, St3gal2.ttest, Vwa7.ttest, Wnt16.ttest)
 
 normalized.conditions <- gl(4, 8, 32, label=c("ALA", "LA", "LC", "OC"))
 

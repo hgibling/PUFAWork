@@ -1,5 +1,6 @@
 library(tidyr)
 library(dplyr)
+library(plyr)
 
 setwd("~/Desktop/PCR Results")
 
@@ -124,3 +125,62 @@ PCR.results <- rbind(Adam9.fc, Angptl2.fc, Angptl4.fc, Col15a1.fc, Col3a1.fc, Hm
 
 write.table(PCR.results, "~/Desktop/PCR fold changes.csv", row.names=F, col.names=T, quote=F, sep=",")
 
+
+# Test for significance of fold changes
+
+ttest.fc <- function(gene, housekeeping, genename){
+	compare <- join(gene, housekeeping, by="Sample")
+	normalized.fc <- mutate(compare, Normalized.Cq=Gene.Cq.Mean-Housekeeping.Cq.Mean) %>%
+		select(Sample, Normalized.Cq)
+	mat <- matrix(nrow=1, c(normalized.fc[,2]))
+	colnames(mat) <- normalized.fc[,1]
+	rownames(mat) <- genename
+	return(mat)
+}
+
+Adam9.ttest <- ttest.fc(Adam9.cDNA1, Rn18s.cDNA1, "Adam9")
+Angptl2.ttest <- ttest.fc(Angptl2.cDNA2, Rn18s.cDNA2, "Angptl2")
+Angptl4.ttest <- ttest.fc(Angptl4.cDNA2, Rn18s.cDNA2, "Angptl4")
+Col15a1.ttest <- ttest.fc(Col15a1.cDNA1, Rn18s.cDNA1, "Col15a1")
+Col3a1.ttest <- ttest.fc(Col3a1.cDNA1, Rn18s.cDNA1, "Col3a1")
+Hmcn1.ttest <- ttest.fc(Hmcn1.cDNA2, Rn18s.cDNA2, "Hmcn1")
+Igf1.ttest <- ttest.fc(Igf1.cDNA2, Rn18s.cDNA2, "Igf1")
+Lgi1.ttest <- ttest.fc(Lgi1.cDNA1, Rn18s.cDNA1, "Lgi1")
+Nrp1.ttest <- ttest.fc(Nrp1.cDNA2, Rn18s.cDNA2, "Nrp1")
+Ntn4.ttest <- ttest.fc(Ntn4.cDNA2, Rn18s.cDNA2, "Ntn4")
+Pdgfd.ttest <- ttest.fc(Pdgfd.cDNA1, Rn18s.cDNA1, "Pdgfd")
+St3gal2.ttest <- ttest.fc(St3gal2.cDNA2, Rn18s.cDNA2, "St3gal2")
+Vwa7.ttest <- ttest.fc(Vwa7.cDNA1, Rn18s.cDNA1, "Vwa7")
+Wnt16.ttest <- ttest.fc(Wnt16.cDNA2, Rn18s.cDNA2, "Wnt16")
+
+matbind <- rbind(Adam9.ttest, Angptl2.ttest, Angptl4.ttest, Col15a1.ttest, Col3a1.ttest, Hmcn1.ttest, Igf1.ttest, Lgi1.ttest, Nrp1.ttest, Ntn4.ttest, Pdgfd.ttest, St3gal2.ttest, Vwa7.ttest, Wnt16.ttest)
+
+normalized.conditions <- gl(4, 8, 32, label=c("ALA", "LA", "LC", "OC"))
+
+pcr.ttest.results <- matrix(nrow=nrow(matbind), ncol=6)
+colnames(pcr.ttest.results) <- pairwise.comparisons
+rownames(pcr.ttest.results) <- rownames(matbind)
+
+for (i in 1:nrow(matbind)){
+	p <- pairwise.t.test(matbind[i,], normalized.conditions, p.adj="none")
+	pv <- p$p.value
+	pcr.ttest.results[i,1] <- pv[3,3]
+	pcr.ttest.results[i,2] <- pv[2,1]
+	pcr.ttest.results[i,3] <- pv[3,1]
+	pcr.ttest.results[i,4] <- pv[2,2]
+	pcr.ttest.results[i,5] <- pv[3,2]
+	pcr.ttest.results[i,6] <- pv[1,1]
+}
+
+pcr.results.sig <- PCR.results[,-1]
+rownames(pcr.results.sig) <- PCR.results[,1]
+
+for (i in 1:nrow(pcr.ttest.results)){
+	for (j in 1:ncol(pcr.ttest.results)){
+		if (pcr.ttest.results[i,j] > 0.05){
+			pcr.results.sig[i,j] <- NA
+		}
+	}
+}
+
+write.table(pcr.results.sig, "~/Desktop/Significant PCR fold changes.csv", row.names=T, col.names=T, quote=F, sep=",")

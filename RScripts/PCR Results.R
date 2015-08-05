@@ -7,11 +7,10 @@ setwd("~/Desktop/PCR Results")
 # Prep the data by removing unnecessary columns, identifying triplicates with a standard deviation of more than 0.2, removing the furthest replicate from the median, and recalculating the triplicate mean
 
 gene.prep <- function(filename){
-	file <- read.csv(filename)
+	file <- read.csv(filename, na.strings="N/A")
 	remove.excess <- file[, c(5:8)]
-	remove.excess <- filter(remove.excess, !Cq=="N/A")
-	remove.excess$Cq <- as.numeric(remove.excess$Cq)
-	grouped <- group_by(remove.excess, Sample)
+	remove.NAs <- na.omit(remove.excess)
+	grouped <- group_by(remove.NAs, Sample)
 	filtered.above <- filter(grouped, Cq.Std..Dev>0.2)
 	filtered.below <- filter(grouped, Cq.Std..Dev<=0.2) %>%
 		select(Sample, Gene.Cq.Mean=Cq.Mean)
